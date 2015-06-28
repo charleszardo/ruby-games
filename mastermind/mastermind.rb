@@ -1,9 +1,25 @@
+require 'colorize'
+
+class String
+  def orange
+    self.light_red
+  end
+  
+  def purple
+    self.magenta
+  end
+end
+
 class Code
   attr_reader :seq
   COLORS = [:red, :green, :blue, :yellow, :orange, :purple]
   
   def initialize(seq = Code.random)
     @seq = seq
+  end
+  
+  def display
+    puts @seq.map { |color| color.to_s.send(color)}.join(" ")
   end
   
   def self.random
@@ -13,14 +29,7 @@ class Code
   end
   
   def self.seq_check
-    
-  end
-  
-  def ==(code2)
-    @seq.each_index do |idx|
-      return false if @seq[idx] != code2.seq[idx]
-    end
-    true 
+    #todo
   end
 end
 
@@ -61,6 +70,7 @@ class Game
     while true
       @turns += 1
       guess = @player2.create_code
+      guess.display
       if guess == correct_code
         puts "you won in #{@turns} tries!"
         break
@@ -92,7 +102,7 @@ class Human < Player
   
   def create_code
     puts "give me a code! (format: 'RGYB')"
-    Code.new(parse_code(gets.chomp))
+    Code.new(parse_code(gets.chomp.upcase))
   end
   
   def parse_code(code)
@@ -114,6 +124,8 @@ if $PROGRAM_NAME == __FILE__
 
   g = Game.new(p1, p2)
   g.play
+  # c1 = Code.new
+  # c1.display
 end
 
 
