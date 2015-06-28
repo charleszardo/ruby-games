@@ -64,6 +64,8 @@ class Game
       if guess == correct_code
         puts "you won in #{@turns} tries!"
         break
+      elsif @turns >= 10
+        puts "10 turns up! you lose!"
       else
         comparison = self.compare(correct_code, guess)
         exact, near = comparison[:exact], comparison[:near]
