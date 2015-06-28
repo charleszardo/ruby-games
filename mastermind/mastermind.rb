@@ -15,15 +15,22 @@ class Code
   def self.seq_check
     
   end
+  
+  def ==(code2)
+    @seq.each_index do |idx|
+      return false if @seq[idx] != code2.seq[idx]
+    end
+    true 
+  end
 end
 
 class Game
-  def initialize(seq1, seq2)
-    @seq1, @seq2 = seq1, seq2
+  def initialize(player1, player2)
+    @player1, @player2 = player1, player2
     @turns = 0
   end
   
-  def compare(seq1=@seq1, seq2=@seq2)
+  def compare(seq1, seq2)
     exact, near = 0, 0
     test1, test2 = seq1.seq.dup, seq2.seq.dup
     test1_hash = {}
@@ -50,8 +57,19 @@ class Game
   end
   
   def play
-    correct_code = player1.create_code
-    
+    correct_code = @player1.create_code
+    while true
+      @turns += 1
+      guess = @player2.create_code
+      if guess == correct_code
+        puts "you won in #{@turns} tries!"
+        break
+      else
+        comparison = self.compare(correct_code, guess)
+        exact, near = comparison[:exact], comparison[:near]
+        puts "you have #{exact} correct and #{near} near."
+      end
+    end
   end
 end
 
@@ -90,7 +108,9 @@ end
 
 c1 = Code.new
 c2 = Code.new
-h = Human.new
-p h.create_code
 
-g = Game.new(c1, c2)
+p1 = Human.new
+p2 = Human.new
+
+g = Game.new(p1, p2)
+g.play
