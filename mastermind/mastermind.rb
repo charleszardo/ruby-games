@@ -72,11 +72,13 @@ class Human < Player
   
   def create_code
     puts "give me a code! (format: 'RGYB')"
-    code = gets.chomp
+    Code.new(parse_code(gets.chomp))
   end
   
-  def parse_code
-    
+  def parse_code(code)
+    code.split("").map do |color|
+      CODE_CONVERTER[color]
+    end
   end
 end
 
@@ -88,5 +90,7 @@ end
 
 c1 = Code.new
 c2 = Code.new
+h = Human.new
+p h.create_code
 
 g = Game.new(c1, c2)
