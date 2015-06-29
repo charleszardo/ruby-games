@@ -1,3 +1,5 @@
+require 'colorize'
+
 class Board
   attr_reader :grid
 
@@ -21,8 +23,10 @@ class Board
       temp_row = row.map do |el|
         if el.nil?
           "   "
-        else
-          " #{el} "
+        elsif el == :x
+          " #{el} ".red
+        elsif el == :o
+          " #{el} ".blue
         end
       end
       puts temp_row.join("|")
