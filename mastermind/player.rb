@@ -4,29 +4,19 @@ class Player
 end
 
 class Human < Player
-  CODE_CONVERTER = {
-    "R" => :red,
-    "G" => :green,
-    "B" => :blue,
-    "Y" => :yellow,
-    "O" => :orange,
-    "P" => :purple
-  }
-  
   def create_code
-    puts "give me a code! (format: 'RGYB')"
-    Code.new(parse_code(gets.chomp.upcase))
-  end
-  
-  def parse_code(code)
-    code.split("").map do |color|
-      CODE_CONVERTER[color]
+    guess = nil
+    until guess
+      puts "give me a code! (format: 'RGYB')"
+      guess = Code.parse_code(gets.chomp.upcase)
+      puts "invalid code!" if !guess
     end
+    guess
   end
 end
 
 class Computer < Player
   def create_code
-    Code.new
+    Code.random
   end
 end
