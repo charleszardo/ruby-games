@@ -47,13 +47,13 @@ module Battleship
       end
       
       attack = attack.map {|coord| coord.to_i }
+      
       if @game_board.open_space?(attack)
         puts "you missed!"
         @player.board[attack[0], attack[1]] = "X"
       else
         ship = @game_board[attack[0], attack[1]]
-        p ship
-        @player.board[attack[0], attack[1]] = ship
+        @player.board[attack[0], attack[1]] = ship.to_s.colorize(SHIPS[ship][:color])
         @game_board[attack[0], attack[1]] = "*"
         if ship_arr.include?(ship)
           puts "you hit a ship!"
