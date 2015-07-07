@@ -1,10 +1,12 @@
+require 'colorize'
+
 module Battleship
   class Game
-    SHIPS = { :a => {:name => "aircraft carrier", :size =>5},
-              :b => {:name => "battleship", :size =>4},
-              :s => {:name => "submarine", :size =>3},
-              :d => {:name => "destroyer", :size =>3},
-              :p => {:name => "patrol boat", :size =>2}
+    SHIPS = { :a => {:name => "aircraft carrier", :size =>5, :color => :red},
+              :b => {:name => "battleship", :size =>4, :color => :green},
+              :s => {:name => "submarine", :size =>3, :color => :blue},
+              :d => {:name => "destroyer", :size =>3, :color => :magenta},
+              :p => {:name => "patrol boat", :size =>2, :color => :cyan}
     }
     
     attr_reader :game_board, :player
@@ -50,6 +52,7 @@ module Battleship
         @player.board[attack[0], attack[1]] = "X"
       else
         ship = @game_board[attack[0], attack[1]]
+        p ship
         @player.board[attack[0], attack[1]] = ship
         @game_board[attack[0], attack[1]] = "*"
         if ship_arr.include?(ship)
@@ -65,7 +68,9 @@ module Battleship
     end
     
     def valid_move?(move)
-      return false unless move.class == Array && move.length == 2 && move.all? {|coord| coord == coord.to_i.to_s}
+      unless move.length == 2 && move.all? {|coord| coord == coord.to_i.to_s}
+        return false
+      end
       move = move.map {|coord| coord.to_i }
       @game_board.in_range?(move)
     end
