@@ -40,7 +40,7 @@ module Battleship
         if valid_move?(attack)
           valid_attack = true
         else
-          puts "that's not a valid move!"
+          puts "-----that's not a valid move!"
         end
       end
       
@@ -49,14 +49,19 @@ module Battleship
         puts "you missed!"
         @player.board[attack[0], attack[1]] = "X"
       else
-        puts "you hit a ship!"
         ship = @game_board[attack[0], attack[1]]
         @player.board[attack[0], attack[1]] = ship
         @game_board[attack[0], attack[1]] = "*"
-        p ship
-        p ship_arr
+        if ship_arr.include?(ship)
+          puts "you hit a ship!"
+        else
+          name = SHIPS[ship][:name]
+          puts "you sunk a #{name}!"
+        end
       end
+      puts ""
       @player.show_board
+      puts ""
     end
     
     def valid_move?(move)
@@ -94,11 +99,15 @@ module Battleship
     end
     
     def display
+      puts (0..9).to_a.unshift(" ").join(" ")
+      row_num = 0
       @grid.each do |row|
         r = row.map do |spot|
           spot.nil? ? "_" : spot
         end
+        r.unshift(row_num.to_s)
         puts r.join(" ")
+        row_num += 1
       end
     end
     
@@ -160,7 +169,9 @@ module Battleship
     
     def make_move
       puts "make an attack (format: 0,1)"
-      gets.chomp.split(",")
+      move = gets.chomp.split(",")
+      puts ""
+      move
     end
     
     def show_board
