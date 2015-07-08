@@ -2,9 +2,11 @@ module Hangman
   class Game
     attr_accessor :secret_word, :secret_length, :secret
     
-    def initialize
-      @player = Hangman::Player.new
+    def initialize(player=Hangman::Human.new, dealer=Hangman::Computer.new)
+      @player = player
+      @dealer = dealer
       @dictionary = Game.create_dictionary
+      @player.receive_dict(@dictionary)
       word = @dictionary.sample
       @secret = word
       @secret_word = Game.secret_setup(word)
@@ -84,8 +86,37 @@ module Hangman
   
   
   class Player
+    attr_reader :dict
+    
+    def initialize
+    end
+    
+    def guess_letter
+    end
+    
+    def receive_dict(dict)
+      @dict = dict
+    end
+    
+    def receive_secret_length(len)
+      @secret_len = len
+    end
+  end
+  
+  class Human < Player
     def initialize
       
+    end
+    
+    def guess_letter
+      puts "guess a letter"
+      gets.chomp
+    end
+  end
+  
+  class Computer < Player
+    
+    def initialize
     end
     
     def guess_letter
@@ -96,6 +127,8 @@ module Hangman
 end
 
 if $PROGRAM_NAME == __FILE__
-  g = Hangman::Game.new
+  h = Hangman::Human.new
+  c = Hangman::Computer.new
+  g = Hangman::Game.new(c,h)
   g.play
 end
