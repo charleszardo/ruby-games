@@ -7,10 +7,15 @@ module Hangman
       @dealer = dealer
       @dictionary = Game.create_dictionary
       @player.receive_dict(@dictionary)
+      @dealer.receive_dict(@dealer)
       word = @dictionary.sample
       @secret = word
       @secret_word = Game.secret_setup(word)
       @secret_length = secret_word.length
+    end
+    
+    def create_secret
+      
     end
     
     def play
@@ -129,6 +134,6 @@ end
 if $PROGRAM_NAME == __FILE__
   h = Hangman::Human.new
   c = Hangman::Computer.new
-  g = Hangman::Game.new(c,h)
+  g = Hangman::Game.new(h,c)
   g.play
 end
