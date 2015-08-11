@@ -7,17 +7,23 @@ module Hangman
       @dealer = dealer
       @dictionary = Game.create_dictionary
       @player.receive_dict(@dictionary)
+<<<<<<< HEAD
       @dealer.receive_dict(@dealer)
+=======
+>>>>>>> battleship
       word = @dictionary.sample
       @secret = word
       @secret_word = Game.secret_setup(word)
       @secret_length = secret_word.length
     end
     
+<<<<<<< HEAD
     def create_secret
       
     end
     
+=======
+>>>>>>> battleship
     def play
       guesses = 0
       until solved?
@@ -134,6 +140,10 @@ end
 if $PROGRAM_NAME == __FILE__
   h = Hangman::Human.new
   c = Hangman::Computer.new
+<<<<<<< HEAD
   g = Hangman::Game.new(h,c)
+=======
+  g = Hangman::Game.new(c,h)
+>>>>>>> battleship
   g.play
 end
