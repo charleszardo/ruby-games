@@ -11,8 +11,8 @@ module Battleship
     
     attr_reader :game_board, :player
     
-    def initialize
-      @player = Battleship::Player.new
+    def initialize(player=Battleship::Human.new)
+      @player = player
       @game_board = Battleship::Board.new
       setup_board
     end
@@ -33,20 +33,11 @@ module Battleship
         play_turn
         rounds += 1
       end
+      puts "you won!"
     end
     
     def play_turn
-      valid_attack = false
-      until valid_attack
-        attack = @player.make_move
-        if valid_move?(attack)
-          valid_attack = true
-        else
-          puts "-----that's not a valid move!"
-        end
-      end
-      
-      attack = attack.map {|coord| coord.to_i }
+      attack = get_attack
       
       if @game_board.open_space?(attack)
         puts "you missed!"
@@ -65,6 +56,17 @@ module Battleship
       puts ""
       @player.show_board
       puts ""
+    end
+    
+    def get_attack
+      while true
+        attack = @player.make_move
+        if valid_move?(attack)
+          return attack.map {|coord| coord.to_i }
+        else
+          puts "-----that's not a valid move!"
+        end
+      end
     end
     
     def valid_move?(move)
@@ -172,21 +174,47 @@ module Battleship
       @board = Battleship::Board.new
     end
     
+    def show_board
+      @board.display
+    end
+  end
+  
+  class Human < Player
     def make_move
       puts "make an attack (format: 0,1)"
       move = gets.chomp.split(",")
       puts ""
+      p move
       move
     end
+  end
+  
+  class Computer < Player
+    def initialize
+      @moves = []
+      super
+      puts @board
+    end
     
-    def show_board
-      @board.display
+    def make_move
+      new_move = false
+      move = nil
+      until new_move
+        move = []
+        2.times { move << (0..9).to_a.sample.to_s }
+        if !@moves.include?(move)
+          @moves << move
+          new_move = true
+        end
+      end
+      move
     end
   end
 end
 
 if $PROGRAM_NAME == __FILE__
-  g = Battleship::Game.new
+  c = Battleship::Computer.new
+  g = Battleship::Game.new(c)
   g.play
 end
 
