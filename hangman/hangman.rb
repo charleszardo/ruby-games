@@ -5,25 +5,33 @@ module Hangman
     def initialize(player=Hangman::Human.new, dealer=Hangman::Computer.new)
       @player = player
       @dealer = dealer
-      @dictionary = Game.create_dictionary
-      @player.receive_dict(@dictionary)
-<<<<<<< HEAD
-      @dealer.receive_dict(@dealer)
-=======
->>>>>>> battleship
-      word = @dictionary.sample
-      @secret = word
-      @secret_word = Game.secret_setup(word)
-      @secret_length = secret_word.length
-    end
-    
-<<<<<<< HEAD
-    def create_secret
+      @dict = Game.create_dictionary
+      @player.receive_dict(@dict)
+      @dealer.receive_dict(@dict)
       
+      set_secret_word
+      @secret_word = Game.secret_setup(@secret)
+      @secret_length = @secret_word.length
+      @player.receive_secret_length(@secret_length)
     end
     
-=======
->>>>>>> battleship
+    def set_secret_word
+      loop do
+        puts "give me a secret word"
+        word = @dealer.pick_secret_word.downcase
+        if valid_word?(word)
+          @secret = word
+          break
+        else
+          puts "invalid secret word!"
+        end
+      end
+    end
+    
+    def valid_word?(word)
+      @dict.include?(word)
+    end
+    
     def play
       guesses = 0
       until solved?
@@ -36,18 +44,19 @@ module Hangman
     
     def play_turn
       display
-      
-      guess_okay = false
-      until guess_okay
-        guess = @player.guess_letter
-        if Game.valid_guess?(guess)
-          guess_okay = true 
+      guess
+    end
+    
+    def guess
+      loop do
+        letter = @player.guess_letter
+        if Game.valid_guess?(letter)
+          handle_guess(letter)
+          break
         else
           puts "invalid guess!"
         end
       end
-      
-      handle_guess(guess)
     end
     
     def handle_guess(guess)
@@ -105,6 +114,9 @@ module Hangman
     def guess_letter
     end
     
+    def create_word
+    end
+    
     def receive_dict(dict)
       @dict = dict
     end
@@ -119,6 +131,14 @@ module Hangman
       
     end
     
+    def pick_secret_word
+      gets.chomp
+    end
+    
+    def receive_secret_length(len)
+      @secret_length = len
+    end
+    
     def guess_letter
       puts "guess a letter"
       gets.chomp
@@ -126,8 +146,16 @@ module Hangman
   end
   
   class Computer < Player
-    
     def initialize
+      @guessed_letters = {}
+    end
+    
+    def pick_secret_word
+      @dict.sample
+    end
+    
+    def receive_secret_length(len)
+      @secret_length = len
     end
     
     def guess_letter
@@ -140,10 +168,7 @@ end
 if $PROGRAM_NAME == __FILE__
   h = Hangman::Human.new
   c = Hangman::Computer.new
-<<<<<<< HEAD
   g = Hangman::Game.new(h,c)
-=======
-  g = Hangman::Game.new(c,h)
->>>>>>> battleship
+  #g = Hangman::Game.new(c,h)
   g.play
 end
