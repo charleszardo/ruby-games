@@ -1,4 +1,5 @@
 # TODO_ add guess response to computer (phase 3 of assignment)
+require 'byebug'
 
 module Hangman
   class Game
@@ -64,7 +65,7 @@ module Hangman
     def handle_guess(guess)
       locs = parse_secret_word(guess)
       
-      @player.receive_guess_response({ guess => locs })
+      @player.receive_guess_response(guess, locs)
     end
     
     def parse_secret_word(guess)
@@ -178,18 +179,39 @@ module Hangman
       reduce_dict_size
     end
     
-    def receive_guess_response(response)
-      
+    def update_dict(guess, locs)
+      new_dict = []
+      @dict.each do |word|
+        next if locs.empty? && word.include?(guess)
+        next unless locs.all? {|idx| word[idx] == guess}
+        new_dict << word
+      end
+      @dict = new_dict
+    end
+    
+    def receive_guess_response(guess, locs)
+      @letters.delete(guess)
+      update_dict(guess, locs)
     end
     
     def reduce_dict_size
       @dict.select! {|word| word.length == @secret_length}
     end
     
+    def count_letters
+      count = {}
+      @dict.each do |word|
+        word.split("").each do |char|
+          if @letters.include?(char)
+            count[char] = (count[char] || 0) + 1
+          end
+        end
+      end
+      count
+    end
+    
     def guess_letter
-      guess = @letters.keys.sample
-      @letters.delete(guess)
-      guess
+      count_letters.max_by{|k,v| v}[0]
     end
   end
 end
@@ -197,7 +219,7 @@ end
 if $PROGRAM_NAME == __FILE__
   h = Hangman::Human.new
   c = Hangman::Computer.new
-  g = Hangman::Game.new(h,c)
+  g = Hangman::Game.new(c,h)
   #g = Hangman::Game.new(c,h)
   g.play
 end
