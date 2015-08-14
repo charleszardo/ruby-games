@@ -1,3 +1,5 @@
+# TODO_ add guess response to computer (phase 3 of assignment)
+
 module Hangman
   class Game
     attr_accessor :secret_word, :secret_length, :secret
@@ -8,20 +10,19 @@ module Hangman
       @dict = Game.create_dictionary
       @player.receive_dict(@dict)
       @dealer.receive_dict(@dict)
-      
-      set_secret_word
-      @secret_word = Game.secret_setup(@secret)
+      @secret_word = get_secret_word
+      @secret_display = Game.secret_setup(@secret_word)
       @secret_length = @secret_word.length
       @player.receive_secret_length(@secret_length)
+      @guessed_letters = {}
     end
     
-    def set_secret_word
+    def get_secret_word
       loop do
         puts "give me a secret word"
         word = @dealer.pick_secret_word.downcase
         if valid_word?(word)
-          @secret = word
-          break
+          return word
         else
           puts "invalid secret word!"
         end
@@ -39,7 +40,7 @@ module Hangman
         guesses += 1
       end
       
-      puts "you won in #{guesses} guesses. the secret word was #{@secret}."
+      puts "you won in #{guesses} guesses. the secret word was #{@secret_word}."
     end
     
     def play_turn
@@ -48,9 +49,10 @@ module Hangman
     end
     
     def guess
+      puts "guess a letter"
       loop do
         letter = @player.guess_letter
-        if Game.valid_guess?(letter)
+        if Game.valid_guess?(letter) && already_guessed?(letter)
           handle_guess(letter)
           break
         else
@@ -60,27 +62,39 @@ module Hangman
     end
     
     def handle_guess(guess)
-      @secret_word.each do |k, v|
-        v[:display] = true if v[:char] == guess
+      locs = parse_secret_word(guess)
+      
+      @player.receive_guess_response({ guess => locs })
+    end
+    
+    def parse_secret_word(guess)
+      locs = []
+        
+      @secret_word.split("").each_with_index do |letter, idx|
+        if guess == letter
+          @secret_display[idx] = letter
+          locs << idx
+        end
       end
+      locs
+    end
+    
+    def already_guessed?(guess)
+      if @guessed_letters.include?(guess)
+        puts "you already guessed that letter!"
+      else
+        @guessed_letters[guess] = true
+        return true
+      end
+      false
     end
     
     def display
-      word = []
-      @secret_length.times { word << "_"}
-      @secret_word.each do |k, v|
-        if v[:display]
-          word[k] = v[:char]
-        end
-      end
-      puts word.join(" ")
-      nil
+      puts @secret_display.join(" ")
     end
     
     def solved?
-      @secret_word.all? do |k, v|
-        v[:display] == true
-      end
+      @secret_display.none? { |letter| letter == "_" }
     end
     
     def self.valid_guess?(guess)
@@ -88,11 +102,7 @@ module Hangman
     end
     
     def self.secret_setup(word)
-      word_hash = {}
-      word.split("").each_with_index do |letter, idx|
-        word_hash[idx] = {:char => letter, :display => false}
-      end
-      word_hash
+      word.split("").map { "_" }
     end
     
     def self.create_dictionary
@@ -124,6 +134,9 @@ module Hangman
     def receive_secret_length(len)
       @secret_len = len
     end
+    
+    def receive_guess_response(response)
+    end
   end
   
   class Human < Player
@@ -140,14 +153,20 @@ module Hangman
     end
     
     def guess_letter
-      puts "guess a letter"
       gets.chomp
     end
   end
   
   class Computer < Player
     def initialize
-      @guessed_letters = {}
+      set_letters
+    end
+    
+    def set_letters
+      @letters = {}
+      %w(a b c d e f g h i j k l m n o p q r s t u v w x y z).each do |letter|
+        @letters[letter] = true
+      end
     end
     
     def pick_secret_word
@@ -156,11 +175,21 @@ module Hangman
     
     def receive_secret_length(len)
       @secret_length = len
+      reduce_dict_size
+    end
+    
+    def receive_guess_response(response)
+      
+    end
+    
+    def reduce_dict_size
+      @dict.select! {|word| word.length == @secret_length}
     end
     
     def guess_letter
-      puts "guess a letter"
-      gets.chomp
+      guess = @letters.keys.sample
+      @letters.delete(guess)
+      guess
     end
   end
 end
