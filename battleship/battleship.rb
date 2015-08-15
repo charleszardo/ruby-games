@@ -11,13 +11,8 @@ module Battleship
     
     attr_reader :game_board, :player
     
-<<<<<<< HEAD
-    def initialize
-      @player = Battleship::Player.new
-=======
     def initialize(player=Battleship::Human.new)
       @player = player
->>>>>>> battleship
       @game_board = Battleship::Board.new
       setup_board
     end
@@ -38,7 +33,6 @@ module Battleship
         play_turn
         rounds += 1
       end
-<<<<<<< HEAD
     end
     
     def play_turn
@@ -53,13 +47,12 @@ module Battleship
       end
       
       attack = attack.map {|coord| coord.to_i }
-=======
       puts "you won!"
     end
     
     def play_turn
       attack = get_attack
->>>>>>> battleship
+      response = {:hit => false, :ship => nil, :loc => attack, :sunk => false}
       
       if @game_board.open_space?(attack)
         puts "you missed!"
@@ -68,20 +61,23 @@ module Battleship
         ship = @game_board[attack[0], attack[1]]
         @player.board[attack[0], attack[1]] = ship.to_s.colorize(SHIPS[ship][:color])
         @game_board[attack[0], attack[1]] = "*"
+        response[:hit] = true
+        response[:ship] = ship
         if ship_arr.include?(ship)
           puts "you hit a ship!"
         else
           name = SHIPS[ship][:name]
+          response[:sunk] = true
           puts "you sunk a #{name}!"
         end
       end
+      @player.receive_respone(response)
+      
       puts ""
       @player.show_board
       puts ""
     end
-    
-<<<<<<< HEAD
-=======
+
     def get_attack
       while true
         attack = @player.make_move
@@ -93,7 +89,6 @@ module Battleship
       end
     end
     
->>>>>>> battleship
     def valid_move?(move)
       unless move.length == 2 && move.all? {|coord| coord == coord.to_i.to_s}
         return false
@@ -112,7 +107,6 @@ module Battleship
       SHIPS.keys.each {|ship| ship_count += 1 if pieces.include?ship}
       ship_count
     end
-    
   end
   
   class Board
@@ -199,26 +193,21 @@ module Battleship
       @board = Battleship::Board.new
     end
     
-<<<<<<< HEAD
-=======
     def show_board
       @board.display
     end
   end
   
   class Human < Player
->>>>>>> battleship
     def make_move
       puts "make an attack (format: 0,1)"
       move = gets.chomp.split(",")
       puts ""
-<<<<<<< HEAD
       move
     end
     
     def show_board
       @board.display
-=======
       p move
       move
     end
@@ -243,18 +232,14 @@ module Battleship
         end
       end
       move
->>>>>>> battleship
     end
   end
 end
 
 if $PROGRAM_NAME == __FILE__
-<<<<<<< HEAD
   g = Battleship::Game.new
-=======
   c = Battleship::Computer.new
-  g = Battleship::Game.new(c)
->>>>>>> battleship
+  g = Battleship::Game.new(c)r
   g.play
 end
 
