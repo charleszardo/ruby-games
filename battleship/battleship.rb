@@ -71,7 +71,7 @@ module Battleship
           puts "you sunk a #{name}!"
         end
       end
-      @player.receive_respone(response)
+      @player.receive_attack_response(response)
       
       puts ""
       @player.show_board
@@ -191,10 +191,15 @@ module Battleship
     
     def initialize
       @board = Battleship::Board.new
+      @last_move = nil
     end
     
     def show_board
       @board.display
+    end
+    
+    def receive_attack_response(response)
+      @last_move = response
     end
   end
   
@@ -221,6 +226,18 @@ module Battleship
     end
     
     def make_move
+      if @last_move
+        smart_move
+      else
+        random_move
+      end
+    end
+    
+    def smart_move
+      
+    end
+    
+    def random_move
       new_move = false
       move = nil
       until new_move
@@ -239,7 +256,7 @@ end
 if $PROGRAM_NAME == __FILE__
   g = Battleship::Game.new
   c = Battleship::Computer.new
-  g = Battleship::Game.new(c)r
+  g = Battleship::Game.new(c)
   g.play
 end
 
