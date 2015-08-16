@@ -192,6 +192,9 @@ module Battleship
     def initialize
       @board = Battleship::Board.new
       @last_move = nil
+      @direction = nil
+      @base_pos = nil
+      @deltas = [[1, 0], [-1, 0], [0, 1], [0, -1]]
     end
     
     def show_board
@@ -226,15 +229,20 @@ module Battleship
     end
     
     def make_move
-      if @last_move
+      if @last_move && !@last_move[:sunk]
         smart_move
       else
+        @direction = nil
+        @base_pos = nil
         random_move
       end
     end
     
     def smart_move
-      
+      if @direction
+        
+      else
+      end
     end
     
     def random_move
