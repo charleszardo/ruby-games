@@ -77,13 +77,43 @@ class Board
   def reveal(loc)
     self[*loc].reveal
   end
+  
+  def hide(cards)
+    cards.each { |card| card.hide }
+  end
 end
 
 class Game
+  def initialize(size=4)
+    @board = Board.new(size)
+  end
   
+  def play
+    until @board.won?
+      turn
+      break
+    end
+  end
+  
+  def get_card_from_player
+    puts "select a card"
+    gets.chomp.split(",")
+  end
+  
+  def turn
+    card1 = @board[get_card_from_player]
+    p card1
+    @board.render
+    puts "select the second card"
+    card2 = @board.reveal(gets.chomp.split(""))
+    @board.render
+    p card1
+    p card2
+  end
+    
 end
 
 if __FILE__ == $PROGRAM_NAME
-  b = Board.new
-  b.render
+  g = Game.new
+  g.play
 end
