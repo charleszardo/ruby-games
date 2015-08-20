@@ -46,11 +46,11 @@ class Board
     nil
   end
   
-  def [](x,y)
+  def [](x, y)
     @grid[x][y]
   end
   
-  def []=(x,y,value)
+  def []=(x, y, value)
     @grid[x][y] = value
   end
   
@@ -61,7 +61,7 @@ class Board
   end
   
   def set_grid_loc(loc, value)
-    self[loc[0], loc[1]] = value
+    self[*loc] = value
   end
   
   def render
@@ -74,10 +74,13 @@ class Board
     @grid.flatten.all? { |card| card.exposed? }
   end
   
-  def reveal(x,y)
-    card = self[x, y]
-    card.reveal
+  def reveal(loc)
+    self[*loc].reveal
   end
+end
+
+class Game
+  
 end
 
 if __FILE__ == $PROGRAM_NAME
