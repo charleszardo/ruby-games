@@ -1,3 +1,5 @@
+require 'byebug'
+
 class Card
   attr_reader :value
   
@@ -68,6 +70,7 @@ class Board
     @grid.each do |row|
       puts row.map { |card| card.to_s }.join(" | ")
     end
+    puts "\n"
   end
   
   def won?
@@ -84,31 +87,44 @@ class Board
 end
 
 class Game
-  def initialize(size=4)
+  def initialize(player)
+    @player = player
+    size = get_difficulty
     @board = Board.new(size)
+    @turns = 0
+  end
+  
+  def get_difficulty
+    @player.select_difficulty
   end
   
   def play
-    until @board.won?
-      turn
-      break
-    end
+    turn until @board.won? || @turns > 10
+    puts (@board.won? ? "YOU WON!" : "YOU LOST!")
   end
   
-  def get_card_from_player
+  def get_and_reveal_card
     puts "select a card"
-    gets.chomp.split(",")
+    idx = gets.chomp.split(",").map { |num| num.to_i }
+    card = @board[*idx]
+    card.reveal
+    card
   end
   
   def turn
-    card1 = @board[get_card_from_player]
-    p card1
+    card1 = get_and_reveal_card
     @board.render
-    puts "select the second card"
-    card2 = @board.reveal(gets.chomp.split(""))
+    card2 = get_and_reveal_card
     @board.render
-    p card1
-    p card2
+    if card1 != card2
+      card1.hide
+      card2.hide
+      puts "NOT A MATCH!"
+    else
+      puts "MATCH!"
+    end
+    @turns += 1
+    system "clear"
   end
     
 end
