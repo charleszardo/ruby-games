@@ -31,15 +31,8 @@ class Card
 end
 
 class Bomb < Card
-  attr_accessor :seen
-  
-  def initialize
-    @seen = false
-    super
-  end
-  
   def to_s
-    exposed? ? "B"
+    exposed? ? "B" : "X"
   end
 end
 
@@ -48,6 +41,7 @@ class Board
     @size = size
     @grid = Array.new(size) { Array.new(size) }
     @play_with_bombs = true
+    @bombs = []
     populate
   end
   
@@ -69,9 +63,9 @@ class Board
     ((@size - 2) / 2).times do
       x, y = random_board_loc
       val = self[x,y].value
-      self[x, y] = Bomb.new
+      @bombs << self[x, y] = Bomb.new
       x, y = find_value_on_grid(val)
-      self[x, y] = Bomb.new
+      @bombs << self[x, y] = Bomb.new
     end
   end
   
@@ -121,6 +115,14 @@ class Board
     puts "\n"
   end
   
+  def show_bombs
+    @bombs.each { |bomb| bomb.reveal }
+    render
+    sleep(2)
+    system "clear"
+    @bombs.each { |bomb| bomb.hide }
+  end
+  
   def won?
     @grid.flatten.all? { |card| card.is_a?(Bomb) || card.exposed? }
   end
@@ -148,6 +150,7 @@ class Game
   end
   
   def play
+    @board.show_bombs
     turn until @board.won? || @turns > @max_turns
     puts (@board.won? ? "PLAYER WINS!" : "PLAYER LOSES!")
   end
@@ -156,15 +159,25 @@ class Game
     pos = @player.select_card(@size)
     card = @board[*pos]
     card.reveal
+    bomb_check(card)
     @player.receive_match(card)
     @board.render
     card
+  end
+
+  def bomb_check(card)
+    if card.is_a?(Bomb)
+      @turns = @max_turns + 1
+      puts "PLAYER STEPPED ON A BOMB!"
+    end
   end
   
   def turn
     @board.render
     card1 = get_and_reveal_card
+    return if card1.is_a?(Bomb)
     card2 = get_and_reveal_card
+    return if card2.is_a?(Bomb)
     if card1 != card2
       card1.hide
       card2.hide
@@ -296,6 +309,6 @@ end
 if __FILE__ == $PROGRAM_NAME
   h = Human.new
   c = Computer.new
-  g = Game.new(h)
+  g = Game.new(c)
   g.play
 end
