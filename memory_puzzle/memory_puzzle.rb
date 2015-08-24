@@ -22,7 +22,7 @@ class Card
   end
   
   def to_s
-    @facing == :up ? @value.to_s : "X"
+    exposed? ? @value.to_s : "X"
   end
   
   def ==(other)
@@ -30,10 +30,24 @@ class Card
   end
 end
 
+class Bomb < Card
+  attr_accessor :seen
+  
+  def initialize
+    @seen = false
+    super
+  end
+  
+  def to_s
+    exposed? ? "B"
+  end
+end
+
 class Board
   def initialize(size=4)
     @size = size
     @grid = Array.new(size) { Array.new(size) }
+    @play_with_bombs = true
     populate
   end
   
@@ -45,7 +59,28 @@ class Board
       loc = index_to_grid_loc(idx)
       set_grid_loc(loc, card)
     end
+    
+    add_bombs
     nil
+  end
+  
+  def add_bombs
+    return unless @play_with_bombs
+    ((@size - 2) / 2).times do
+      x, y = random_board_loc
+      val = self[x,y].value
+      self[x, y] = Bomb.new
+      x, y = find_value_on_grid(val)
+      self[x, y] = Bomb.new
+    end
+  end
+  
+  def find_value_on_grid(val)
+    (0...@size).each do |x|
+      (0...@size).each do |y|
+        return [x,y] if self[x,y].value == val
+      end
+    end
   end
   
   def [](x, y)
@@ -60,6 +95,12 @@ class Board
     x = (index / @size)
     y = (index % @size)
     [x,y]
+  end
+  
+  def random_board_loc
+    x = (0...@size).to_a.sample
+    y = (0...@size).to_a.sample
+    [x, y]
   end
   
   def set_grid_loc(loc, value)
@@ -81,7 +122,7 @@ class Board
   end
   
   def won?
-    @grid.flatten.all? { |card| card.exposed? }
+    @grid.flatten.all? { |card| card.is_a?(Bomb) || card.exposed? }
   end
   
   def reveal(loc)
@@ -99,6 +140,7 @@ class Game
     @size = get_difficulty
     @board = Board.new(@size)
     @turns = 0
+    @max_turns = @size * 3
   end
   
   def get_difficulty
@@ -106,25 +148,23 @@ class Game
   end
   
   def play
-    turn until @board.won? || @turns > 10
-    puts (@board.won? ? "YOU WON!" : "YOU LOST!")
+    turn until @board.won? || @turns > @max_turns
+    puts (@board.won? ? "PLAYER WINS!" : "PLAYER LOSES!")
   end
   
   def get_and_reveal_card
     pos = @player.select_card(@size)
     card = @board[*pos]
     card.reveal
+    @player.receive_match(card)
+    @board.render
     card
   end
   
   def turn
     @board.render
     card1 = get_and_reveal_card
-    @player.receive_match(card1)
-    @board.render
     card2 = get_and_reveal_card
-    @player.receive_match(card2)
-    @board.render
     if card1 != card2
       card1.hide
       card2.hide
@@ -133,7 +173,7 @@ class Game
       puts "MATCH!"
     end
     @turns += 1
-    sleep(5)
+    sleep(2)
     system "clear"
   end
 end
@@ -143,6 +183,7 @@ class Player
     @prev_guess = nil
     @current_guess = nil
     @guesses = {}
+    @matches = []
   end
   
   def valid_selection?(selection, board_size)
@@ -194,43 +235,67 @@ class Human < Player
 end
 
 class Computer < Player
+  attr_reader :board_locs
+  
+  def generate_board_locs(size)
+    @board_locs = []
+    (0...size).each do |x|
+      (0...size).each do |y|
+        @board_locs << [x, y]
+      end
+    end
+  end
+  
+  def random_guess
+    guess = @board_locs.sample
+    @board_locs.delete(guess)
+    guess
+  end
   
   def select_card(board_size)
     selection = nil
-    loop do
-      selection = Array.new(2) { (0...board_size).to_a.sample }
-      if @prev_guess
-        unless @prev_guess == selection
-          @prev_guess = nil
-          break
-        end
+    if @prev_guess
+      val = @prev_guess.value
+      if @guesses[val].size == 2
+        selection = @guesses[val].find { |loc| loc != @current_guess }
+        @guesses.delete(val)
       else
-        @prev_guess = selection
-        break
+        selection = random_guess
       end
+    elsif match_ready?
+      selection = match_ready?[1][0]
+    else
+      selection = random_guess
     end
     
     @current_guess = selection
   end
   
+  def match_ready?
+    @guesses.find { |k, v| v.size == 2 }
+  end
+  
   def receive_match(card)
+    @prev_guess = @prev_guess ? nil : card
+    
     val = card.value
     if @guesses[val]
-      @guesses[val][:pos] << @current_guess
+      @guesses[val] << @current_guess unless @guesses[val].include?(@current_guess)
     else
-      @guesses[val] = { :pos => [@current_guess], :matched => false }
+      @guesses[val] = [@current_guess]
     end
-    p @guesses
   end
   
   def select_difficulty
-    [4, 6, 8].sample
+    diff = [4, 6, 8].sample
+    generate_board_locs(diff)
+    diff
   end
 end
 
 if __FILE__ == $PROGRAM_NAME
   h = Human.new
   c = Computer.new
-  g = Game.new(c)
+  g = Game.new(h)
   g.play
 end
