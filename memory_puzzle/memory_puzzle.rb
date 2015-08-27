@@ -1,4 +1,5 @@
 require 'byebug'
+require 'ncurses'
 
 class Card
   attr_reader :value
@@ -307,8 +308,10 @@ class Computer < Player
 end
 
 if __FILE__ == $PROGRAM_NAME
-  h = Human.new
-  c = Computer.new
-  g = Game.new(c)
-  g.play
+  # h = Human.new
+  # c = Computer.new
+  # g = Game.new(c)
+  # g.play
+  b = Board.new
+  b.render
 end
