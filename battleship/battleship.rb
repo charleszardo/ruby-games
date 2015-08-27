@@ -53,7 +53,7 @@ module Battleship
     
     def play_turn
       attack = get_attack
-      response = {:hit => false, :ship => nil, :loc => attack, :sunk => false}
+      response = {:ship => nil, :loc => attack, :sunk => false}
       
       if @game_board.open_space?(attack)
         puts "you missed!"
@@ -62,7 +62,6 @@ module Battleship
         ship = @game_board[attack[0], attack[1]]
         @player.board[attack[0], attack[1]] = ship.to_s.colorize(SHIPS[ship][:color])
         @game_board[attack[0], attack[1]] = "*"
-        response[:hit] = true
         response[:ship] = ship
         if ship_arr.include?(ship)
           puts "you hit a ship!"
@@ -91,10 +90,9 @@ module Battleship
     end
     
     def valid_move?(move)
-      unless move.length == 2 && move.all? {|coord| coord == coord.to_i.to_s}
+      unless move.length == 2 && move.all? { |coord| coord.is_a?(Fixnum) }
         return false
       end
-      move = move.map {|coord| coord.to_i }
       @game_board.in_range?(move)
     end
     
@@ -192,10 +190,23 @@ module Battleship
     
     def initialize
       @board = Battleship::Board.new
+      @board_size = @board.size
       @last_move = nil
       @direction = nil
       @base_pos = nil
+      @current_moves = []
+      @current_ship = []
       @deltas = [[1, 0], [-1, 0], [0, 1], [0, -1]]
+      generate_moves
+    end
+    
+    def generate_moves
+      @moves = []
+      (0...@board_size).each do |x|
+        (0...@board_size).each do |y|
+          @moves << [x, y].map {|loc| loc }
+        end
+      end
     end
     
     def show_board
@@ -204,13 +215,13 @@ module Battleship
     
     def receive_attack_response(response = {})
       defaults = {
-        :hit => false,
         :ship => nil,
         :loc => nil,
         :sunk => false
       }
       
       response = defaults.merge(response)
+      @moves.delete(response[:loc])
       @last_move = response
     end
   end
@@ -218,7 +229,7 @@ module Battleship
   class Human < Player
     def make_move
       puts "make an attack (format: 0,1)"
-      move = gets.chomp.split(",")
+      move = gets.chomp.split(",").map { |coord| coord.to_i }
       puts ""
       move
     end
@@ -229,20 +240,51 @@ module Battleship
   end
   
   class Computer < Player
-    def initialize
-      @moves = []
-      super
-      puts @board
-    end
-    
     def make_move
-      if @last_move && !@last_move[:sunk]
-        smart_move
-      else
+      if !@last_move
+        # first move
+        random_move
+      elsif @last_move[:sunk]
+        # ship sunk, start over
         @direction = nil
         @base_pos = nil
+        @current_ship = []
         random_move
+      elsif !@base_pos && !@last_move[:ship]
+        # didn't get a hit last round, not pursuing anything
+        random_move
+      elsif !@base_pos && @last_move[:ship]
+        # got a hit last round, begin figuring out where the ship is
+        @base_pos = @last_move[:loc]
+        find_rest_of_ship
+      elsif @base_pos && !@direction && !@last_move[:ship]
+        # still haven't figured out which direction this ship is in from the beginning hit
+        continue_attacking_ship
+      elsif @base_pos && !@direction && @last_move[:ship]
+        # now we know what direction to go in
+      elsif @base_pos && @direction && !@last_move[:ship]
+        # go back to other end
+      elsif @base_pos && @direction && @last_move[:ship]
+        # on the trail, keep moving in this direction
+      else
+        # I DON'T KNOW!!!
       end
+    end
+    
+    def find_rest_of_ship
+      temp_moves = []
+      @deltas.each do |delta|
+        new_delta = []
+        new_delta << delta[0] + @last_move[:loc][0]
+        new_delta << delta[1] + @last_move[:loc][1]
+        temp_moves << new_delta
+      end
+      temp_moves.select { |move| @moves.include?(move) }.sample
+    end
+    
+    def continue_attacking_ship
+      p @base_pos
+      p @last_move[:loc]
     end
     
     def smart_move
@@ -253,25 +295,14 @@ module Battleship
     end
     
     def random_move
-      new_move = false
-      move = nil
-      until new_move
-        move = []
-        2.times { move << (0..9).to_a.sample.to_s }
-        if !@moves.include?(move)
-          @moves << move
-          new_move = true
-        end
-      end
-      move
+      @moves.sample
     end
   end
 end
 
 if $PROGRAM_NAME == __FILE__
-  g = Battleship::Game.new
   c = Battleship::Computer.new
-  g = Battleship::Game.new
+  g = Battleship::Game.new(c)
   g.play
 end
 
