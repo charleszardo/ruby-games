@@ -1,4 +1,5 @@
 require 'colorize'
+require 'byebug'
 
 module Battleship
   class Game
@@ -201,7 +202,15 @@ module Battleship
       @board.display
     end
     
-    def receive_attack_response(response)
+    def receive_attack_response(response = {})
+      defaults = {
+        :hit => false,
+        :ship => nil,
+        :loc => nil,
+        :sunk => false
+      }
+      
+      response = defaults.merge(response)
       @last_move = response
     end
   end
@@ -216,8 +225,6 @@ module Battleship
     
     def show_board
       @board.display
-      p move
-      move
     end
   end
   
@@ -264,7 +271,7 @@ end
 if $PROGRAM_NAME == __FILE__
   g = Battleship::Game.new
   c = Battleship::Computer.new
-  g = Battleship::Game.new(c)
+  g = Battleship::Game.new
   g.play
 end
 
