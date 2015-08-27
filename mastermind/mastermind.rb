@@ -9,5 +9,3 @@ if $PROGRAM_NAME == __FILE__
   g = Mastermind::Game.new(p1, p2)
   g.play
 end
-
-
