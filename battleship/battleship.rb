@@ -259,10 +259,14 @@ module Battleship
         find_rest_of_ship
       elsif @base_pos && !@direction && !@last_move[:ship]
         # still haven't figured out which direction this ship is in from the beginning hit
-        continue_attacking_ship
+        find_rest_of_ship
       elsif @base_pos && !@direction && @last_move[:ship]
         # now we know what direction to go in
+        determine_direction
+        continue_attacking_ship
       elsif @base_pos && @direction && !@last_move[:ship]
+        reverse_direction
+        continue_attacking_ship
         # go back to other end
       elsif @base_pos && @direction && @last_move[:ship]
         # on the trail, keep moving in this direction
@@ -275,16 +279,32 @@ module Battleship
       temp_moves = []
       @deltas.each do |delta|
         new_delta = []
-        new_delta << delta[0] + @last_move[:loc][0]
-        new_delta << delta[1] + @last_move[:loc][1]
+        new_delta << delta[0] + @base_pos[0]
+        new_delta << delta[1] + @base_pos[1]
         temp_moves << new_delta
       end
-      temp_moves.select { |move| @moves.include?(move) }.sample
+      move = temp_moves.select { |move| @moves.include?(move) }.sample
+      move
+    end
+    
+    def determine_direction
+      debugger
+      @direction = []
+      last_move_loc = @last_move[:loc]
+      @direction << last_move_loc[0] - @base_pos[0]
+      @direction << last_move_loc[1] - @base_pos[1]
+    end
+    
+    def reverse_direction
+      @direction.map! { |coord| coord *= -1}
+      @last_move[:loc] = @base_pos
     end
     
     def continue_attacking_ship
-      p @base_pos
-      p @last_move[:loc]
+      attack = []
+      attack << @last_move[:loc][0] + @direction[0]
+      attack << @last_move[:loc][1] + @direction[1]
+      attack
     end
     
     def smart_move
