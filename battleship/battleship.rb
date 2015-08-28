@@ -37,8 +37,11 @@ module Battleship
       rounds = 0
       until game_over?
         play_turn
+        change_players
         rounds += 1
       end
+      change_players
+      closing_credits
     end
 
     def play_turn
@@ -101,6 +104,16 @@ module Battleship
         return false
       end
       @game_board.in_range?(move)
+    end
+
+    def change_players
+      @player = [@player1, @player2].select { |player| player != @player }.first
+      @board = [@board1, @board2].select { |board| board != @board }.first
+    end
+
+    def closing_credits
+      name = @player == @player1 ? "Player 1" : "Player 2"
+      puts "GAME OVER. #{name} wins."
     end
 
     def game_over?
@@ -347,6 +360,7 @@ end
 
 if $PROGRAM_NAME == __FILE__
   c = Battleship::Computer.new
-  g = Battleship::Game.new(c)
+  h = Battleship::Human.new
+  g = Battleship::Game.new(h, c)
   g.play
 end
