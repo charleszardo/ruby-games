@@ -9,25 +9,30 @@ module Battleship
               :d => {:name => "destroyer", :size =>3, :color => :magenta},
               :p => {:name => "patrol boat", :size =>2, :color => :cyan}
     }
-    
+
     attr_reader :game_board, :player
-    
-    def initialize(player=Battleship::Human.new)
-      @player = player
-      @game_board = Battleship::Board.new
-      setup_board
+
+    def initialize(player1, player2)
+      @player1 = player1
+      @player2 = player2
+      @board1 = Battleship::Board.new
+      @board2 = Battleship::Board.new
+      @player = player1
+      @game_board = @board1
+      setup_board(@board1)
+      setup_board(@board2)
     end
-    
-    def setup_board
+
+    def setup_board(board)
       SHIPS.keys.shuffle.each do |ship|
-        @game_board.populate_grid(ship, SHIPS[ship])
+        board.populate_grid(ship, SHIPS[ship])
       end
     end
-    
+
     def ship_arr
       @game_board.flatten.select {|coord| !coord.nil?}
     end
-    
+
     def play
       rounds = 0
       until game_over?
@@ -35,8 +40,10 @@ module Battleship
         rounds += 1
       end
     end
-    
+
     def play_turn
+      puts "GOT HERE!"
+      sleep(2)
       valid_attack = false
       until valid_attack
         attack = @player.make_move
@@ -46,15 +53,15 @@ module Battleship
           puts "-----that's not a valid move!"
         end
       end
-      
+
       attack = attack.map {|coord| coord.to_i }
       puts "you won!"
     end
-    
+
     def play_turn
       attack = get_attack
       response = {:ship => nil, :loc => attack, :sunk => false}
-      
+
       if @game_board.open_space?(attack)
         puts "you missed!"
         @player.board[attack[0], attack[1]] = "X"
@@ -72,7 +79,7 @@ module Battleship
         end
       end
       @player.receive_attack_response(response)
-      
+
       puts ""
       @player.show_board
       puts ""
@@ -88,18 +95,18 @@ module Battleship
         end
       end
     end
-    
+
     def valid_move?(move)
       unless move.length == 2 && move.all? { |coord| coord.is_a?(Fixnum) }
         return false
       end
       @game_board.in_range?(move)
     end
-    
+
     def game_over?
       count == 0
     end
-    
+
     def count
       ship_count = 0
       pieces = ship_arr
@@ -107,22 +114,22 @@ module Battleship
       ship_count
     end
   end
-  
+
   class Board
     attr_reader :grid, :size
-    
+
     ACTIONS = [[0,1],
                [0,-1],
                [1,0],
                [-1,0]]
-    
+
     def initialize(size=10)
       @size = size
       @grid = Array.new(size) do |row|
         Array.new(size)
       end
     end
-    
+
     def display
       puts (0..9).to_a.unshift(" ").join(" ")
       row_num = 0
@@ -135,26 +142,26 @@ module Battleship
         row_num += 1
       end
     end
-    
+
     def [](row,col)
       @grid[row][col]
     end
-    
+
     def []=(row,col,val)
       @grid[row][col] = val
     end
-    
+
     def flatten
       @grid.flatten
     end
-    
+
     def populate_grid(symbol, ship)
       coords = find_placement(ship[:size])
       coords.each do |coord|
         self[coord[0],coord[1]] = symbol
       end
     end
-    
+
     def find_placement(size)
       placed = false
       until placed
@@ -170,24 +177,24 @@ module Battleship
       end
       coords
     end
-    
+
     def in_range?(pos)
       pos[0] >= 0 && pos[0] < @grid.length && pos[1] >=0 && pos[1] < @grid.length
     end
-    
+
     def open_space?(pos)
       self[pos[0],pos[1]].nil?
     end
-    
+
     def random_loc
       x, y = (0...@size).to_a.sample, (0...@size).to_a.sample
       [x,y]
     end
   end
-  
+
   class Player
     attr_accessor :board
-    
+
     def initialize
       @board = Battleship::Board.new
       @board_size = @board.size
@@ -195,11 +202,12 @@ module Battleship
       @direction = nil
       @base_pos = nil
       @current_moves = []
-      @current_ship = []
+      @current_ship = nil
+      @ship_queue = {}
       @deltas = [[1, 0], [-1, 0], [0, 1], [0, -1]]
       generate_moves
     end
-    
+
     def generate_moves
       @moves = []
       (0...@board_size).each do |x|
@@ -208,24 +216,24 @@ module Battleship
         end
       end
     end
-    
+
     def show_board
       @board.display
     end
-    
+
     def receive_attack_response(response = {})
       defaults = {
         :ship => nil,
         :loc => nil,
         :sunk => false
       }
-      
+
       response = defaults.merge(response)
       @moves.delete(response[:loc])
       @last_move = response
     end
   end
-  
+
   class Human < Player
     def make_move
       puts "make an attack (format: 0,1)"
@@ -233,12 +241,12 @@ module Battleship
       puts ""
       move
     end
-    
+
     def show_board
       @board.display
     end
   end
-  
+
   class Computer < Player
     def make_move
       if !@last_move
@@ -248,7 +256,7 @@ module Battleship
         # ship sunk, start over
         @direction = nil
         @base_pos = nil
-        @current_ship = []
+        @current_ship = nil
         random_move
       elsif !@base_pos && !@last_move[:ship]
         # didn't get a hit last round, not pursuing anything
@@ -256,25 +264,50 @@ module Battleship
       elsif !@base_pos && @last_move[:ship]
         # got a hit last round, begin figuring out where the ship is
         @base_pos = @last_move[:loc]
+        @current_ship = @last_move[:ship]
         find_rest_of_ship
       elsif @base_pos && !@direction && !@last_move[:ship]
         # still haven't figured out which direction this ship is in from the beginning hit
         find_rest_of_ship
       elsif @base_pos && !@direction && @last_move[:ship]
         # now we know what direction to go in
+        check_ship_type
         determine_direction
-        continue_attacking_ship
+        attack = continue_attacking_ship
+        if !@moves.include?(attack)
+          reverse_direction
+          return continue_attacking_ship
+        end
+        attack
       elsif @base_pos && @direction && !@last_move[:ship]
         reverse_direction
         continue_attacking_ship
-        # go back to other end
+        # go back to other end and attack
       elsif @base_pos && @direction && @last_move[:ship]
         # on the trail, keep moving in this direction
+        check_ship_type
+        continue_attacking_ship
       else
-        # I DON'T KNOW!!!
+        puts "I DON'T KNOW!!!"
+        sleep(2)
       end
     end
-    
+
+    def check_ship_type
+      if @last_move[:ship] != @current_ship
+        @ship_queue[@last_move[:ship]] = [@last_move[:loc]]
+        return find_rest_of_ship
+      end
+    end
+
+    def check_ship_queue
+      unless @ship_queue.empty?
+        ship = @ship_queue.keys.sample
+        locs = @ship_queue[ship]
+        return locs.sample
+      end
+    end
+
     def find_rest_of_ship
       temp_moves = []
       @deltas.each do |delta|
@@ -286,34 +319,26 @@ module Battleship
       move = temp_moves.select { |move| @moves.include?(move) }.sample
       move
     end
-    
+
     def determine_direction
-      debugger
       @direction = []
       last_move_loc = @last_move[:loc]
       @direction << last_move_loc[0] - @base_pos[0]
       @direction << last_move_loc[1] - @base_pos[1]
     end
-    
+
     def reverse_direction
       @direction.map! { |coord| coord *= -1}
       @last_move[:loc] = @base_pos
     end
-    
+
     def continue_attacking_ship
       attack = []
       attack << @last_move[:loc][0] + @direction[0]
       attack << @last_move[:loc][1] + @direction[1]
       attack
     end
-    
-    def smart_move
-      if @direction
-        
-      else
-      end
-    end
-    
+
     def random_move
       @moves.sample
     end
@@ -325,5 +350,3 @@ if $PROGRAM_NAME == __FILE__
   g = Battleship::Game.new(c)
   g.play
 end
-
-
