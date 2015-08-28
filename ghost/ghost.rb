@@ -22,20 +22,24 @@ class Game
 
   def play_round
     until @round_over
-      take_turn
+      turn
     end
   end
 
   def update_dict
   end
 
-  def take_turn
+  def turn
     next_letter = nil
     loop do
       next_letter = @current_player.play_turn
       break if valid_play?(temp_frag)
     end
     @fragment += next_letter.downcase
+  end
+
+  def get_letter
+    
   end
 
   def valid_play?(letter)
@@ -62,6 +66,10 @@ class Game
   end
 end
 
+class Player
+  def initialize
+  end
+end
 if $PROGRAM_NAME == __FILE__
   g = Game.new(1,2,3,4,5)
 end
