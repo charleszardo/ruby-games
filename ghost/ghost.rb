@@ -3,6 +3,15 @@ require 'set'
 class Game
   attr_reader :current_player, :previous_player, :players, :dictionary
 
+  def self.create_dictionary
+    dictionary = Set.new
+    File.open("./dictionary.txt").each_line do |line|
+      l = line.chomp
+      dictionary << l if l.length >= 3
+    end
+    dictionary
+  end
+
   def initialize(*players)
     @players = players
     @current_player = @players[0]
@@ -11,18 +20,14 @@ class Game
   end
 
   def play
-    loop do
-      play_round
-      break if game_over?
-    end
+    play_round until game_over?
     puts "GAME OVER! #{@previous_player.name} loses!"
   end
 
+  private
+
   def play_round
-    loop do
-      turn
-      break if round_over?
-    end
+    turn until round_over?
     show_scores
     reset
   end
@@ -43,14 +48,16 @@ class Game
   def turn
     puts "#{@current_player.name}'s turn."
     puts "Word: #{@fragment}"
-    next_letter = nil
-    loop do
-      next_letter = @current_player.play_turn
-      break if valid_play?(next_letter)
-    end
-    @fragment += next_letter.downcase
+    @fragment += get_letter
     update_dict
     next_player!
+  end
+
+  def get_letter
+    loop do
+      next_letter = @current_player.play_turn
+      return next_letter.downcase if valid_play?(next_letter)
+    end
   end
 
   def round_over?
@@ -77,15 +84,6 @@ class Game
     next_idx = (current_idx + 1) % @players.size
     next_player = @players[next_idx]
     @current_player = next_player
-  end
-
-  def self.create_dictionary
-    dictionary = Set.new
-    File.open("./dictionary.txt").each_line do |line|
-      l = line.chomp
-      dictionary << l if l.length >= 3
-    end
-    dictionary
   end
 end
 
@@ -119,6 +117,7 @@ class Player
     @ghost.empty?
   end
 end
+
 if $PROGRAM_NAME == __FILE__
   p1 = Player.new("Player 1")
   p2 = Player.new("Player 2")
