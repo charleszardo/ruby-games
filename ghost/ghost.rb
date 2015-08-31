@@ -7,35 +7,62 @@ class Game
     @players = players
     @current_player = @players[0]
     @previous_player = nil
-    @fragment = ""
-    @game_over = false
-    @round_over = false
-    @dictionary = Game.create_dictionary
+    reset
   end
 
   def play
-    until @game_over
+    loop do
       play_round
-
+      break if game_over?
     end
+    puts "GAME OVER! #{@previous_player.name} loses!"
   end
 
   def play_round
-    until @round_over
-      take_turn
+    loop do
+      turn
+      break if round_over?
     end
+    show_scores
+    reset
+  end
+
+  def show_scores
+    @players.each { |player| player.show_score }
+  end
+
+  def reset
+    @fragment = ""
+    @dictionary = Game.create_dictionary
   end
 
   def update_dict
+    @dictionary = @dictionary.grep /#{@fragment}/
   end
 
-  def take_turn
+  def turn
+    puts "#{@current_player.name}'s turn."
+    puts "Word: #{@fragment}"
     next_letter = nil
     loop do
       next_letter = @current_player.play_turn
-      break if valid_play?(temp_frag)
+      break if valid_play?(next_letter)
     end
     @fragment += next_letter.downcase
+    update_dict
+    next_player!
+  end
+
+  def round_over?
+    if @fragment.size > 3 && @dictionary.include?(@fragment)
+      @previous_player.add_letter
+      return true
+    end
+    false
+  end
+
+  def game_over?
+    @players.any? { |p| p.lost? }
   end
 
   def valid_play?(letter)
@@ -62,6 +89,40 @@ class Game
   end
 end
 
+class Player
+  attr_reader :name
+
+  def initialize(name)
+    @name = name
+    reset_score
+  end
+
+  def reset_score
+    @ghost = %w(g h o s t)
+  end
+
+  def show_score
+    letters = 5 - @ghost.size
+    puts "#{@name}: #{%w(G H O S T)[0...letters].join("")}"
+  end
+
+  def play_turn
+    puts "Gimme a letter"
+    letter = gets.chomp.downcase
+  end
+
+  def add_letter
+    @ghost.shift
+  end
+
+  def lost?
+    @ghost.empty?
+  end
+end
 if $PROGRAM_NAME == __FILE__
-  g = Game.new(1,2,3,4,5)
+  p1 = Player.new("Player 1")
+  p2 = Player.new("Player 2")
+  p3 = Player.new("Player 3")
+  g = Game.new(p1, p2, p3)
+  g.play
 end
