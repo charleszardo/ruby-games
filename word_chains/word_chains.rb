@@ -10,23 +10,32 @@ class WordChainer
   end
 
   def run(source, target)
+    reduce_dictionary(target)
     @current_words = Set.new [source]
     @all_seen_words = { source => nil }
-
-    until @current_words.empty?
-      new_current_words = Set.new explore_current_words
-      break if new_current_words.include?(target)
-      @current_words = new_current_words
-    end
-
+    explore_current_words(target)
     build_path(target)
+  end
+
+  private
+
+  def reduce_dictionary(target)
+    @dictionary.select! { |word| word.length == target.length}
   end
 
   def build_path(target)
     target == nil ? [] : build_path(@all_seen_words[target]) << target
   end
 
-  def explore_current_words
+  def explore_current_words(target)
+    until @current_words.empty?
+      new_current_words = Set.new find_new_current_words
+      break if new_current_words.include?(target)
+      @current_words = new_current_words
+    end
+  end
+
+  def find_new_current_words
     @current_words.map { |curr_word| find_new_adjacent_words(curr_word) }.flatten
   end
 
@@ -52,6 +61,8 @@ class WordPair
   def adjacent_words?
     same_length? && off_by_one?
   end
+
+  private
 
   def off_by_one?
     get_diff == 1
