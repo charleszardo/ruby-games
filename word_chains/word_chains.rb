@@ -1,13 +1,8 @@
 require 'set'
 
 class WordChainer
-  def self.create_dictionary(dictionary_file)
-    dictionary = Set.new
-    File.open(dictionary_file).each_line do |line|
-      l = line.chomp
-      dictionary << l if l.length >= 3
-    end
-    dictionary
+  def self.create_dictionary(file)
+    Set.new File.open(file).map { |l| l.chomp }
   end
 
   def initialize(dictionary_file)
@@ -37,12 +32,7 @@ class WordChainer
 
   def find_new_adjacent_words(base_word)
     adjacent_words(base_word).select do |adj_word|
-      if @all_seen_words.has_key?(adj_word)
-        false
-      else
-        @all_seen_words[adj_word] = base_word
-        true
-      end
+      @all_seen_words.has_key?(adj_word) ? false : @all_seen_words[adj_word] = base_word
     end.flatten
   end
 
@@ -51,8 +41,15 @@ class WordChainer
   end
 
   def adjacent_words?(word1, word2)
-    word1.length == word2.length &&
+    same_length?(word1, word2) && off_by_one?(word1, word2)
+  end
+
+  def off_by_one?(word1, word2)
     get_diff(word1, word2) == 1
+  end
+
+  def same_length?(word1, word2)
+    word1.length == word2.length
   end
 
   def get_diff(word1, word2)
