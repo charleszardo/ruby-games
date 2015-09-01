@@ -16,10 +16,13 @@ class WordChainer
 
   def run(source, target)
     @current_words = Set.new [source]
-    @all_seen_words = Set.new [source]
+    @all_seen_words = { source => nil }
 
     until @current_words.empty?
       new_current_words = Set.new explore_current_words
+      new_current_words.each do |word|
+        p "#{word}: #{@all_seen_words[word]}"
+      end
       @current_words = new_current_words
     end
   end
@@ -30,10 +33,10 @@ class WordChainer
 
   def find_new_adjacent_words(base_word)
     adjacent_words(base_word).select do |adj_word|
-      if @all_seen_words.include?(adj_word)
+      if @all_seen_words.has_key?(adj_word)
         false
       else
-        @all_seen_words << adj_word
+        @all_seen_words[adj_word] = base_word
         true
       end
     end.flatten
@@ -59,5 +62,5 @@ end
 
 if __FILE__ == $PROGRAM_NAME
   w = WordChainer.new('./dictionary.txt')
-  w.run("dog", "doc")
+  w.run("market", "doc")
 end
