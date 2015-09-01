@@ -37,25 +37,34 @@ class WordChainer
   end
 
   def adjacent_words(word)
-    @dictionary.select { |dict_word| adjacent_words?(word, dict_word) }
+    @dictionary.select do |dict_word|
+      WordPair.new(word, dict_word).adjacent_words?
+    end
+  end
+end
+
+class WordPair
+  def initialize(word1, word2)
+    @word1 = word1
+    @word2 = word2
   end
 
-  def adjacent_words?(word1, word2)
-    same_length?(word1, word2) && off_by_one?(word1, word2)
+  def adjacent_words?
+    same_length? && off_by_one?
   end
 
-  def off_by_one?(word1, word2)
-    get_diff(word1, word2) == 1
+  def off_by_one?
+    get_diff == 1
   end
 
-  def same_length?(word1, word2)
-    word1.length == word2.length
+  def same_length?
+    @word1.length == @word2.length
   end
 
-  def get_diff(word1, word2)
+  def get_diff
     diffs = 0
-    word1 = word1.split("")
-    word2 = word2.split("")
+    word1 = @word1.split("")
+    word2 = @word2.split("")
     word1.each_index { |idx| diffs += 1 if word1[idx] != word2[idx] }
     diffs
   end
