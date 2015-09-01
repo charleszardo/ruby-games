@@ -20,11 +20,15 @@ class WordChainer
 
     until @current_words.empty?
       new_current_words = Set.new explore_current_words
-      new_current_words.each do |word|
-        p "#{word}: #{@all_seen_words[word]}"
-      end
+      break if new_current_words.include?(target)
       @current_words = new_current_words
     end
+
+    build_path(target)
+  end
+
+  def build_path(target)
+    target == nil ? [] : build_path(@all_seen_words[target]) << target
   end
 
   def explore_current_words
@@ -62,5 +66,5 @@ end
 
 if __FILE__ == $PROGRAM_NAME
   w = WordChainer.new('./dictionary.txt')
-  w.run("market", "doc")
+  p w.run("market", "junker")
 end
