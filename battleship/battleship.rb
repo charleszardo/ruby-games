@@ -262,27 +262,98 @@ module Battleship
 
   class Computer < Player
     def make_move
-      if !@last_move
-        # first move
+      attack = get_attack
+      p attack
+      attack
+    end
+
+    def get_attack
+      if first_move?
+        first_move
+      elsif sunk_ship?
+        post_sunk_move
+      elsif searching_for_ship?
         random_move
-      elsif @last_move[:sunk]
-        # ship sunk, start over
-        @direction = nil
-        @base_pos = nil
-        @current_ship = nil
+      elsif first_hit?
+        handle_first_hit
+      elsif in_pursuit?
+        if searching_for_rest_of_ship?
+          find_rest_of_ship
+        elsif found_different_ship?
+          @diff_ship = true
+          handle_different_ship
+        else
+          @diff_ship = false
+          determine_next_move
+        end
+      else
+        puts "I DON'T KNOW!!!"
+      end
+    end
+
+    def first_move?
+      # determine whether first move
+      !@last_move
+    end
+
+    def sunk_ship?
+      @last_move[:sunk]
+    end
+
+    def searching_for_ship?
+      !@current_ship && !@last_move[:ship]
+    end
+
+    def searching_for_rest_of_ship?
+      @base_pos && !@direction && !@last_move[:ship]
+    end
+
+    def found_different_ship?
+      @last_move[:ship] != @current_ship
+    end
+
+    def in_pursuit?
+      @current_ship
+    end
+
+    def first_hit?
+      !@base_pos && @last_move[:ship] && !@current_ship
+    end
+
+    def first_move
+      random_move
+    end
+
+    def post_sunk_move
+      @direction, @base_pos, @current_ship = nil, nil, nil
+      if @ship_queue.empty?
         random_move
-      elsif !@base_pos && !@last_move[:ship]
-        # didn't get a hit last round, not pursuing anything
-        random_move
-      elsif !@base_pos && @last_move[:ship]
-        # got a hit last round, begin figuring out where the ship is
-        @base_pos = @last_move[:loc]
-        @current_ship = @last_move[:ship]
-        find_rest_of_ship
-      elsif @base_pos && !@direction && !@last_move[:ship]
-        # still haven't figured out which direction this ship is in from the beginning hit
-        find_rest_of_ship
-      elsif @base_pos && !@direction && @last_move[:ship]
+      else
+        handle_ship_queue
+      end
+    end
+
+    def handle_first_hit
+      @base_pos = @last_move[:loc]
+      @current_ship = @last_move[:ship]
+      find_rest_of_ship
+    end
+
+    def handle_different_ship
+      if @ship_queue[@last_move[:ship]]
+        @ship_queue[@last_move[:ship]] << @last_move[:loc]
+      else
+        @ship_queue[@last_move[:ship]] = [@last_move[:loc]]
+      end
+      determine_next_move
+    end
+
+    def handle_ship_queue
+      # todo.......
+    end
+
+    def determine_next_move
+      if @base_pos && !@direction && @last_move[:ship]
         # now we know what direction to go in
         check_ship_type
         determine_direction
@@ -300,10 +371,11 @@ module Battleship
         # on the trail, keep moving in this direction
         check_ship_type
         continue_attacking_ship
-      else
-        puts "I DON'T KNOW!!!"
-        sleep(2)
       end
+    end
+
+    def attack_pos(pos)
+      pos
     end
 
     def check_ship_type
