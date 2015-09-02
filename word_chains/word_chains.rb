@@ -2,7 +2,7 @@ require 'set'
 
 class WordChainer
   def self.create_dictionary(file)
-    Set.new File.open(file).map { |l| l.chomp }
+    Set.new File.open(file).map(&:chomp)
   end
 
   def initialize(dictionary_file)
@@ -11,9 +11,10 @@ class WordChainer
 
   def run(source, target)
     reduce_dictionary(target)
-    @current_words = Set.new [source]
-    @all_seen_words = { source => nil }
-    explore_current_words(target)
+    @current_words, @all_seen_words = (Set.new [source]), { source => nil }
+
+    explore_current_words until @current_words.empty? || @all_seen_words.include?(target)
+
     build_path(target)
   end
 
@@ -27,16 +28,8 @@ class WordChainer
     target == nil ? [] : build_path(@all_seen_words[target]) << target
   end
 
-  def explore_current_words(target)
-    until @current_words.empty?
-      new_current_words = Set.new find_new_current_words
-      break if new_current_words.include?(target)
-      @current_words = new_current_words
-    end
-  end
-
-  def find_new_current_words
-    @current_words.map { |curr_word| find_new_adjacent_words(curr_word) }.flatten
+  def explore_current_words
+    @current_words = Set.new @current_words.map { |curr_word| find_new_adjacent_words(curr_word) }.flatten
   end
 
   def find_new_adjacent_words(base_word)
@@ -82,6 +75,5 @@ class WordPair
 end
 
 if __FILE__ == $PROGRAM_NAME
-  w = WordChainer.new('./dictionary.txt')
-  p w.run("market", "junker")
+  p WordChainer.new('./dictionary.txt').run("market", "junker")
 end
