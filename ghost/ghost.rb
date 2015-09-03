@@ -21,7 +21,7 @@ class Game
 
   def play
     play_round until game_over?
-    puts "GAME OVER! #{@previous_player.name} loses!"
+    puts "GAME OVER! #{@players[0]} wins!"
   end
 
   private
@@ -29,13 +29,17 @@ class Game
   def play_round
     turn until round_over?
     show_scores
+    remove_players
     reset
   end
 
   def show_scores
-    @scores.each do |player, score|
-      puts "#{player}: #{GHOST[0...score].join.upcase}"
-    end
+    @scores.each { |player, score| puts "#{player}: #{score_to_ghost(score)}" }
+    puts "\n"
+  end
+
+  def score_to_ghost(score)
+    score >= 5 ? "LOST" : GHOST[0...score].join.upcase
   end
 
   def setup
@@ -44,6 +48,17 @@ class Game
     @scores = {}
     @players.each { |player| @scores[player] = 0}
     reset
+  end
+
+  def remove_players
+    @players.select! do |player|
+      if @scores[player] < 5
+        true
+      else
+        puts "#{player} loses! \n\n"
+        false
+      end
+    end
   end
 
   def reset
@@ -56,9 +71,10 @@ class Game
   end
 
   def turn
-    puts "#{@current_player.name}'s turn."
-    puts "Word: #{@fragment}"
+    puts "#{@current_player}'s turn."
+    puts "Word: #{@fragment} \n\n"
     @fragment += get_letter
+    puts "\n"
     update_dict
     next_player!
   end
@@ -79,7 +95,7 @@ class Game
   end
 
   def game_over?
-    @players.any? { |p| @scores[p] >= 5 }
+    @players.size == 1
   end
 
   def valid_play?(letter)
@@ -98,11 +114,12 @@ class Game
 end
 
 class Player
-  attr_reader :name
-
   def initialize(name)
     @name = name
-    reset_score
+  end
+
+  def to_s
+    @name
   end
 
   def play_turn
@@ -115,6 +132,5 @@ if $PROGRAM_NAME == __FILE__
   p1 = Player.new("Player 1")
   p2 = Player.new("Player 2")
   p3 = Player.new("Player 3")
-  g = Game.new(p1, p2, p3)
-  g.play
+  g = Game.new(p1, p2, p3).play
 end
