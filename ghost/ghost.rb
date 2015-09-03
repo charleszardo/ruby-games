@@ -46,8 +46,13 @@ class Game
     @current_player = @players[0]
     @previous_player = nil
     @scores = {}
-    @players.each { |player| @scores[player] = 0}
+    @players.each { |player| @scores[player] = 0 }
     reset
+    send_players_dictionary
+  end
+
+  def send_players_dictionary
+    @players.each { |player| player.receive_dict(@dictionary) }
   end
 
   def remove_players
@@ -68,6 +73,7 @@ class Game
 
   def update_dict
     @dictionary = @dictionary.grep /#{@fragment}/
+    send_players_dictionary
   end
 
   def turn
@@ -125,6 +131,10 @@ class Player
   def play_turn
     puts "Gimme a letter"
     letter = gets.chomp.downcase
+  end
+
+  def receive_dict(dictionary)
+    @dictionary = dictionary
   end
 end
 
