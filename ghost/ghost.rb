@@ -3,6 +3,8 @@ require 'set'
 class Game
   attr_reader :current_player, :previous_player, :players, :dictionary
 
+  GHOST = %w(g h o s t)
+
   def self.create_dictionary
     dictionary = Set.new
     File.open("./dictionary.txt").each_line do |line|
@@ -14,9 +16,7 @@ class Game
 
   def initialize(*players)
     @players = players
-    @current_player = @players[0]
-    @previous_player = nil
-    reset
+    setup
   end
 
   def play
@@ -33,7 +33,17 @@ class Game
   end
 
   def show_scores
-    @players.each { |player| player.show_score }
+    @scores.each do |player, score|
+      puts "#{player}: #{GHOST[0...score].join.upcase}"
+    end
+  end
+
+  def setup
+    @current_player = @players[0]
+    @previous_player = nil
+    @scores = {}
+    @players.each { |player| @scores[player] = 0}
+    reset
   end
 
   def reset
@@ -62,14 +72,14 @@ class Game
 
   def round_over?
     if @fragment.size > 3 && @dictionary.include?(@fragment)
-      @previous_player.add_letter
+      @scores[@previous_player] += 1
       return true
     end
     false
   end
 
   def game_over?
-    @players.any? { |p| p.lost? }
+    @players.any? { |p| @scores[p] >= 5 }
   end
 
   def valid_play?(letter)
@@ -95,26 +105,9 @@ class Player
     reset_score
   end
 
-  def reset_score
-    @ghost = %w(g h o s t)
-  end
-
-  def show_score
-    letters = 5 - @ghost.size
-    puts "#{@name}: #{%w(G H O S T)[0...letters].join("")}"
-  end
-
   def play_turn
     puts "Gimme a letter"
     letter = gets.chomp.downcase
-  end
-
-  def add_letter
-    @ghost.shift
-  end
-
-  def lost?
-    @ghost.empty?
   end
 end
 
