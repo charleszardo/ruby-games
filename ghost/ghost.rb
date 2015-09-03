@@ -49,10 +49,15 @@ class Game
     @players.each { |player| @scores[player] = 0 }
     reset
     send_players_dictionary
+    send_players_fragment
   end
 
   def send_players_dictionary
     @players.each { |player| player.receive_dict(@dictionary) }
+  end
+
+  def send_players_fragment
+    @players.each { |player| player.receive_fragment(@fragment) }
   end
 
   def remove_players
@@ -82,6 +87,7 @@ class Game
     @fragment += get_letter
     puts "\n"
     update_dict
+    send_players_fragment
     next_player!
   end
 
@@ -136,11 +142,34 @@ class Player
   def receive_dict(dictionary)
     @dictionary = dictionary
   end
+
+  def receive_fragment(fragment)
+    @fragment = fragment
+  end
+end
+
+class Computer < Player
+  def play_turn
+    next_letter = nil
+    losing_letter = nil
+    ("a".."z").each do |letter|
+      new_word = @fragment + letter
+      if @dictionary.include?(new_word)
+        losing_letter = letter
+      elsif (@dictionary.grep /#{new_word}/).size > 0
+        next_letter = letter
+        break
+      end
+    end
+
+    next_letter || losing_letter
+    # %w(a b c d e f g h i j k l m n o p q r s t u v w x y z).sample
+  end
 end
 
 if $PROGRAM_NAME == __FILE__
   p1 = Player.new("Player 1")
   p2 = Player.new("Player 2")
-  p3 = Player.new("Player 3")
+  p3 = Computer.new("KOMPUTER")
   g = Game.new(p1, p2, p3).play
 end
