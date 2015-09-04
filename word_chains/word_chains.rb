@@ -39,16 +39,13 @@ class WordChainer
   end
 
   def adjacent_words(word)
-    @dictionary.select do |dict_word|
-      WordPair.new(word, dict_word).adjacent_words?
-    end
+    @dictionary.select { |dict_word| WordPair.new(word, dict_word).adjacent_words? }
   end
 end
 
 class WordPair
   def initialize(word1, word2)
-    @word1 = word1
-    @word2 = word2
+    @word1, @word2 = word1, word2
   end
 
   def adjacent_words?
