@@ -1,4 +1,5 @@
 require 'set'
+require 'byebug'
 
 class Game
   attr_reader :current_player, :previous_player, :players, :dictionary
@@ -50,6 +51,7 @@ class Game
     reset
     send_players_dictionary
     send_players_fragment
+    remove_players
   end
 
   def send_players_dictionary
@@ -58,6 +60,10 @@ class Game
 
   def send_players_fragment
     @players.each { |player| player.receive_fragment(@fragment) }
+  end
+
+  def send_players_num_players
+    @players.each { |player| player.receive_num_players(@players.size) }
   end
 
   def remove_players
@@ -69,6 +75,7 @@ class Game
         false
       end
     end
+    send_players_num_players
   end
 
   def reset
@@ -77,7 +84,7 @@ class Game
   end
 
   def update_dict
-    @dictionary = @dictionary.grep /#{@fragment}/
+    @dictionary = @dictionary.grep /\A#{@fragment}/
     send_players_dictionary
   end
 
@@ -146,30 +153,34 @@ class Player
   def receive_fragment(fragment)
     @fragment = fragment
   end
+
+  def receive_num_players(num)
+    @players = num
+  end
 end
 
 class Computer < Player
   def play_turn
+    # debugger
     next_letter = nil
-    losing_letter = nil
+    losing_letters = []
     ("a".."z").each do |letter|
       new_word = @fragment + letter
+      matches = (@dictionary.grep /\A#{new_word}/).size
       if @dictionary.include?(new_word)
-        losing_letter = letter
-      elsif (@dictionary.grep /#{new_word}/).size > 0
+        losing_letters << letter
+      elsif matches > 0 && matches % @players != 0
         next_letter = letter
         break
       end
     end
 
-    next_letter || losing_letter
-    # %w(a b c d e f g h i j k l m n o p q r s t u v w x y z).sample
+    next_letter || losing_letters.sample
   end
 end
 
 if $PROGRAM_NAME == __FILE__
   p1 = Player.new("Player 1")
-  p2 = Player.new("Player 2")
   p3 = Computer.new("KOMPUTER")
-  g = Game.new(p1, p2, p3).play
+  g = Game.new(p1, p3).play
 end
