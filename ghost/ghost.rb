@@ -1,4 +1,5 @@
 require 'set'
+require_relative 'player'
 
 class Game
   attr_reader :current_player, :previous_player, :players, :dictionary
@@ -30,6 +31,7 @@ class Game
     turn until round_over?
     show_scores
     remove_players
+    send_num_players
     reset
   end
 
@@ -50,6 +52,7 @@ class Game
     reset
     send_players_dictionary
     send_players_fragment
+    send_num_players
   end
 
   def send_players_dictionary
@@ -58,6 +61,10 @@ class Game
 
   def send_players_fragment
     @players.each { |player| player.receive_fragment(@fragment) }
+  end
+
+  def send_num_players
+    @players.each { |player| player.receive_num_players(@players.size) }
   end
 
   def remove_players
@@ -125,47 +132,6 @@ class Game
   end
 end
 
-class Player
-  def initialize(name)
-    @name = name
-  end
-
-  def to_s
-    @name
-  end
-
-  def play_turn
-    puts "Gimme a letter"
-    letter = gets.chomp.downcase
-  end
-
-  def receive_dict(dictionary)
-    @dictionary = dictionary
-  end
-
-  def receive_fragment(fragment)
-    @fragment = fragment
-  end
-end
-
-class Computer < Player
-  def play_turn
-    next_letter = nil
-    losing_letter = nil
-    ("a".."z").each do |letter|
-      new_word = @fragment + letter
-      if @dictionary.include?(new_word)
-        losing_letter = letter
-      elsif (@dictionary.grep /#{new_word}/).size > 0
-        next_letter = letter
-        break
-      end
-    end
-
-    next_letter || losing_letter
-    # %w(a b c d e f g h i j k l m n o p q r s t u v w x y z).sample
-  end
-end
 
 if $PROGRAM_NAME == __FILE__
   p1 = Player.new("Player 1")
