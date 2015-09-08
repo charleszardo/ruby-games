@@ -1,31 +1,30 @@
 require 'byebug'
-require 'ncurses'
 
 class Card
   attr_reader :value
-  
+
   def initialize(value=nil)
     @value = value
     @facing = :down
   end
-  
+
   def exposed?
     @facing == :up
   end
-  
+
   def hide
     @facing = :down
   end
-  
+
   def reveal
     @facing = :up
     @value
   end
-  
+
   def to_s
     exposed? ? @value.to_s : "X"
   end
-  
+
   def ==(other)
     value == other.value
   end
@@ -45,7 +44,7 @@ class Board
     @bombs = []
     populate
   end
-  
+
   def populate
     max = @size**2 / 2
     values = (1..max).map {|n| [n,n] }.flatten
@@ -54,11 +53,11 @@ class Board
       loc = index_to_grid_loc(idx)
       set_grid_loc(loc, card)
     end
-    
+
     add_bombs
     nil
   end
-  
+
   def add_bombs
     return unless @play_with_bombs
     ((@size - 2) / 2).times do
@@ -69,7 +68,7 @@ class Board
       @bombs << self[x, y] = Bomb.new
     end
   end
-  
+
   def find_value_on_grid(val)
     (0...@size).each do |x|
       (0...@size).each do |y|
@@ -77,31 +76,31 @@ class Board
       end
     end
   end
-  
+
   def [](x, y)
     @grid[x][y]
   end
-  
+
   def []=(x, y, value)
     @grid[x][y] = value
   end
-  
+
   def index_to_grid_loc(index)
     x = (index / @size)
     y = (index % @size)
     [x,y]
   end
-  
+
   def random_board_loc
     x = (0...@size).to_a.sample
     y = (0...@size).to_a.sample
     [x, y]
   end
-  
+
   def set_grid_loc(loc, value)
     self[*loc] = value
   end
-  
+
   def render
     @grid.each do |row|
       row_disp = row.map do |card|
@@ -115,7 +114,7 @@ class Board
     end
     puts "\n"
   end
-  
+
   def show_bombs
     @bombs.each { |bomb| bomb.reveal }
     render
@@ -123,15 +122,15 @@ class Board
     system "clear"
     @bombs.each { |bomb| bomb.hide }
   end
-  
+
   def won?
     @grid.flatten.all? { |card| card.is_a?(Bomb) || card.exposed? }
   end
-  
+
   def reveal(loc)
     self[*loc].reveal
   end
-  
+
   def hide(cards)
     cards.each { |card| card.hide }
   end
@@ -145,17 +144,17 @@ class Game
     @turns = 0
     @max_turns = @size * 3
   end
-  
+
   def get_difficulty
     @player.select_difficulty
   end
-  
+
   def play
     @board.show_bombs
     turn until @board.won? || @turns > @max_turns
     puts (@board.won? ? "PLAYER WINS!" : "PLAYER LOSES!")
   end
-  
+
   def get_and_reveal_card
     pos = @player.select_card(@size)
     card = @board[*pos]
@@ -172,7 +171,7 @@ class Game
       puts "PLAYER STEPPED ON A BOMB!"
     end
   end
-  
+
   def turn
     @board.render
     card1 = get_and_reveal_card
@@ -199,7 +198,7 @@ class Player
     @guesses = {}
     @matches = []
   end
-  
+
   def valid_selection?(selection, board_size)
     pos = selection.split(",")
     return false if pos.length != 2
@@ -214,9 +213,9 @@ class Player
     end
     pos
   end
-  
+
   def receive_match(card)
-    
+
   end
 end
 
@@ -235,7 +234,7 @@ class Human < Player
     end
     selection
   end
-  
+
   def select_difficulty
     loop do
       puts "select difficulty (4, 6, 8)"
@@ -250,7 +249,7 @@ end
 
 class Computer < Player
   attr_reader :board_locs
-  
+
   def generate_board_locs(size)
     @board_locs = []
     (0...size).each do |x|
@@ -259,13 +258,13 @@ class Computer < Player
       end
     end
   end
-  
+
   def random_guess
     guess = @board_locs.sample
     @board_locs.delete(guess)
     guess
   end
-  
+
   def select_card(board_size)
     selection = nil
     if @prev_guess
@@ -281,17 +280,17 @@ class Computer < Player
     else
       selection = random_guess
     end
-    
+
     @current_guess = selection
   end
-  
+
   def match_ready?
     @guesses.find { |k, v| v.size == 2 }
   end
-  
+
   def receive_match(card)
     @prev_guess = @prev_guess ? nil : card
-    
+
     val = card.value
     if @guesses[val]
       @guesses[val] << @current_guess unless @guesses[val].include?(@current_guess)
@@ -299,7 +298,7 @@ class Computer < Player
       @guesses[val] = [@current_guess]
     end
   end
-  
+
   def select_difficulty
     diff = [4, 6, 8].sample
     generate_board_locs(diff)
@@ -308,10 +307,8 @@ class Computer < Player
 end
 
 if __FILE__ == $PROGRAM_NAME
-  # h = Human.new
-  # c = Computer.new
-  # g = Game.new(c)
-  # g.play
-  b = Board.new
-  b.render
+  h = Human.new
+  c = Computer.new
+  g = Game.new(c)
+  g.play
 end
