@@ -1,4 +1,5 @@
 require 'byebug'
+require 'colorize'
 
 class Tile
   attr_reader :value
@@ -15,7 +16,11 @@ class Tile
   end
 
   def to_s
-    @displayed ? @value.to_s : " "
+    if @given
+      @value.to_s.colorize(:light_blue)
+    else
+      @displayed ? @value.to_s : " "
+    end
   end
 
   def display
@@ -64,9 +69,8 @@ class Board
   end
 
   def render
-    @grid.each do |row|
-      puts row.map(&:to_s).join(" | ")
-    end
+    system "clear"
+    @grid.each { |row| puts row.map(&:to_s).join(" | ") }
     nil
   end
 
@@ -87,7 +91,7 @@ class Board
   end
 
   def boxes_solved?
-    sets = []
+    boxes = []
     (0..2).each do |far|
       (0..2).each do |outer|
         set = (0..2).map do |inner|
@@ -96,11 +100,11 @@ class Board
           range_max = range_min + 2
           @grid[factor][range_min..range_max]
         end.flatten
-        sets << set
+        boxes << set
       end
     end
 
-    set_solved?(sets)
+    set_solved?(boxes)
   end
 end
 
