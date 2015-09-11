@@ -1,16 +1,4 @@
-# class Array
-#   def my_transpose
-#   dimension = self.first.count
-#   cols = Array.new(dimension) { Array.new(dimension) }
-#
-#   dimension.times do |i|
-#     dimension.times do |j|
-#       cols[j][i] = self[i][j]
-#     end
-#   end
-#
-#   cols
-# end
+require 'byebug'
 
 class Tile
   attr_reader :value
@@ -21,8 +9,28 @@ class Tile
     @displayed = @given ? true : false
   end
 
+  def change_value(new_value)
+    @value = new_value unless given?
+    display
+  end
+
   def to_s
     @displayed ? @value.to_s : " "
+  end
+
+  def display
+    @displayed = true
+  end
+
+  def erase
+    unless given?
+      @displayed = false
+      @value = 0
+    end
+  end
+
+  def given?
+    @given
   end
 end
 
@@ -44,21 +52,20 @@ class Board
   end
 
   def update(pos, val)
-    self[pos] = val
+    self[pos].change_value(val)
   end
 
   def [](pos)
-    @grid[pos[0], pos[1]]
+    @grid[pos[0]][pos[1]]
   end
 
   def []=(pos, val)
-    @grid[pos[0], pos[1]] = val
+    @grid[pos[0]][pos[1]] = val
   end
 
   def render
     @grid.each do |row|
       puts row.map(&:to_s).join(" | ")
-      # puts row.map(&:to_s).join(" ")
     end
     nil
   end
@@ -94,5 +101,38 @@ class Board
     end
 
     set_solved?(sets)
+  end
+end
+
+class Game
+  attr_accessor :board
+
+  def initialize(puzzle)
+    @board = Board.from_file(puzzle)
+  end
+
+  def play
+    until @board.solved?
+      @board.render
+      turn
+    end
+    @board.render
+    puts 'you win!'
+  end
+
+  def turn
+    make_move
+  end
+
+  def make_move
+    pos = get_pos
+    puts "Give me a value"
+    val = gets.chomp.to_i
+    @board.update(pos, val)
+  end
+
+  def get_pos
+    puts "Give me a pos i.e. 1 2"
+    pos = gets.chomp.split(" ").map(&:to_i)
   end
 end
