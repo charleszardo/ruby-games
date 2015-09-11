@@ -114,25 +114,49 @@ class Game
   def play
     until @board.solved?
       @board.render
-      turn
+      make_move
     end
     @board.render
     puts 'you win!'
   end
 
-  def turn
-    make_move
-  end
-
   def make_move
     pos = get_pos
-    puts "Give me a value"
-    val = gets.chomp.to_i
+    val = get_val
     @board.update(pos, val)
   end
 
   def get_pos
     puts "Give me a pos i.e. 1 2"
-    pos = gets.chomp.split(" ").map(&:to_i)
+    begin
+      input = gets.chomp.split(" ")
+      pos = input.map(&:to_i)
+      raise ArgumentError.new unless valid_pos?(pos, input)
+    rescue
+      puts "invalid position!"
+      retry
+    end
+    pos
+  end
+
+  def get_val
+    puts "Give me a value"
+    begin
+      input = gets.chomp
+      val = input.to_i
+      raise ArgumentError.new unless valid_val?(val, input)
+    rescue
+      puts "invalid value!"
+      retry
+    end
+    val
+  end
+
+  def valid_pos?(pos, input)
+    pos.size == 2 && pos.all? { |num| num.between?(0, 8)} && pos.map(&:to_s) == input
+  end
+
+  def valid_val?(val, input)
+    val.between?(1, 9) && val.to_s == input
   end
 end
