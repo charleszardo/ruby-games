@@ -108,6 +108,10 @@ class Maze
     @grid[pos[0]][pos[1]]
   end
 
+  def []=(pos, val)
+    @grid[pos[0]][pos[1]] = val
+  end
+
   def grid_size
     [@grid[0].size, @grid.size]
   end
@@ -118,12 +122,18 @@ class Maze
     end
   end
 
-  def find_start
+  def find_tile(tile_class)
     @grid.each_with_index do |row, row_idx|
       row.each_with_index do |tile, col_idx|
-        return [row_idx, col_idx] if tile.is_a?(Start)
+        return [row_idx, col_idx] if tile.is_a?(tile_class)
       end
     end
+  end
+
+  def new_move_positions(pos)
+    moves = valid_moves(pos).select { |move| !@visited_positions.include?(move) }
+    @visited_positions.concat(moves)
+    moves
   end
 
   def build_move_tree
@@ -132,6 +142,7 @@ class Maze
     until queue.empty?
       current_node = queue.shift
       current_pos = current_node.value
+
       new_move_positions(current_pos).each do |move|
         move_node = PolyTreeNode.new(move)
         current_node.add_child(move_node)
@@ -141,12 +152,33 @@ class Maze
     starting_node
   end
 
-
-
   def solve
-    @start = find_start
-    end_node = build_move_tree.bfs(end_pos)
+    @start = find_tile(Tile.create_tile("S").class)
+    @end = find_tile(Tile.create_tile("E").class)
+    @visited_positions = [@start]
+    end_node = build_move_tree.bfs(@end)
+    if !end_node
+      puts "No path exists!"
+      return
+    end
+
+    path = []
+    until end_node.nil?
+      path << end_node.value
+      end_node = end_node.parent
+    end
+
+    update_grid(path)
+    render
   end
+
+  def update_grid(path)
+    path[1...-1].each do |pos|
+      self[pos] = Tile.create_tile("X")
+    end
+  end
+
+
 end
 
 class Tile
@@ -160,6 +192,8 @@ class Tile
       Start.new("S")
     when "E"
       End.new("E")
+    when "X"
+      Tile.new("X")
     end
   end
 
@@ -185,5 +219,4 @@ class Space < Tile
 end
 
 m = Maze.from_file('maze.txt')
-s = m.find_start
-p m.valid_moves([4,3])
+m.solve
