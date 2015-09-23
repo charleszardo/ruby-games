@@ -1,3 +1,5 @@
+require 'byebug'
+
 module Searchable
   def dfs(target_value = nil, &prc)
     return self if self.value == target_value
@@ -146,10 +148,15 @@ class Maze
       new_move_positions(current_pos).each do |move|
         move_node = PolyTreeNode.new(move)
         current_node.add_child(move_node)
+        debugger
         queue << move_node
       end
     end
     starting_node
+  end
+
+  def queue_to_s(queue)
+    queue.map { |pos| puts pos.to_s }
   end
 
   def solve
@@ -177,8 +184,6 @@ class Maze
       self[pos] = Tile.create_tile("X")
     end
   end
-
-
 end
 
 class Tile
