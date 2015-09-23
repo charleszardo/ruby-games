@@ -16,6 +16,10 @@ class Board
     @grid[x][y] = val
   end
 
+  def flatten
+    @grid.flatten
+  end
+
   def render
     @grid.each do |row|
       puts row.join(" | ")
@@ -47,10 +51,36 @@ class Tile
       " "
     end
   end
+
+  def expose
+    @exposed = true
+  end
+
+  def exposed?
+    @exposed
+  end
 end
 
 class Bomb < Tile
   def to_s
     "B"
+  end
+end
+
+class Game
+  def initialize(board, size=9, bombs=3)
+    @size = size
+    @bombs = bombs
+    @board = board
+    @board.setup(bombs)
+  end
+
+  def move
+
+  end
+
+  def game_over?
+    exposed = @board.flatten.select { |tile| tile.exposed? }
+    exposed.count == (@size**2 - @bombs) || exposed.any? { |tile| tile.is_a?(Bomb) }
   end
 end
