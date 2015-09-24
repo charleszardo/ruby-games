@@ -36,6 +36,15 @@ class Board
 
     bomb_list.each { |bomb| self[bomb] = Bomb.new }
   end
+
+  def on_board?(pos)
+    pos.all? { |coord| coord >= 0 && coord < @size }
+  end
+
+  def find_adjacent_tiles(tile)
+    # TODO
+    x, y = tile
+  end
 end
 
 class Tile
@@ -73,14 +82,44 @@ class Game
     @bombs = bombs
     @board = board
     @board.setup(bombs)
+    @won = nil
   end
 
-  def move
+  def move(pos)
+    tile = @board[pos]
+    tile.expose
+    if tile.is_a?(Bomb)
+      return
+    else
 
+    end
+  end
+
+  def run(start)
+    all_seen_tiles = [start]
+    queue = [start]
+    until queue.empty?
+      tile = queue.pop
+      adj_tiles = @board.find_adjacent_tiles(tile)
+      bombs = adj_tiles.select { |tile| tile.is_a?(Bomb) }.count
+      tile.expose
+      if bombs > 0
+        tile.numerize(bombs)
+      else
+        queue << adj_tiles
+      end
+    end
   end
 
   def game_over?
     exposed = @board.flatten.select { |tile| tile.exposed? }
-    exposed.count == (@size**2 - @bombs) || exposed.any? { |tile| tile.is_a?(Bomb) }
+    if exposed.count == (@size**2 - @bombs)
+      @won = true
+      return true
+    elsif exposed.any? { |tile| tile.is_a?(Bomb) }
+      @won = false
+      return true
+    end
+    false
   end
 end
