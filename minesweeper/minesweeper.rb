@@ -1,4 +1,5 @@
 require 'byebug'
+require 'colorize'
 
 class Board
   attr_reader :grid
@@ -29,7 +30,8 @@ class Board
     nil
   end
 
-  def setup(bombs=3)
+  def setup(bombs=nil)
+    bombs ||= @size ** 2 / 10
     bomb_list = []
     until bomb_list.size == bombs
       pos = Array.new(2) { rand(@size) }
@@ -51,6 +53,19 @@ class Board
 end
 
 class Tile
+  def self.get_color(num)
+    colors = { 1 => :blue,
+               2 => :green,
+               3 => :red,
+               4 => :magenta,
+               5 => :light_blue,
+               6 => :cyan,
+               7 => :light_red,
+               8 => :yellow
+             }
+    colors[num]
+  end
+
   def initialize(flagged=false)
     @flagged = flagged
     @exposed = false
@@ -58,10 +73,11 @@ class Tile
   end
 
   def to_s
-    if @exposed
+    if @numerized
+      color = Tile.get_color(@numerized)
+      @numerized.to_s.colorize(color)
+    elsif @exposed
       "X"
-    elsif @numerized
-      @numerized.to_s
     else
       " "
     end
@@ -87,7 +103,7 @@ class Bomb < Tile
 end
 
 class Game
-  def initialize(board, size=9, bombs=3)
+  def initialize(board, size, bombs)
     @size = size
     @bombs = bombs
     @board = board
@@ -98,6 +114,8 @@ class Game
   def move(pos)
     tile = @board[pos]
     if tile.is_a?(Bomb)
+      @board.render
+      puts "YA LOSE!!"
       return
     else
       run(pos)
@@ -105,27 +123,25 @@ class Game
   end
 
   def run(start)
-    all_seen_tiles = [start]
+    all_seen_tiles = []
     queue = [start]
-    count = 0
-    until queue.empty? || count > 10
-      @board.render
-      p " "
+    until queue.empty?
       pos = queue.pop
+      next if all_seen_tiles.include?(pos)
       all_seen_tiles << pos
       tile = @board[pos]
+      tile.expose
       adj_pos = @board.find_adjacent_positions(pos)
       adj_tiles = adj_pos.map { |pos| @board[pos] }
       bombs = adj_tiles.select { |tile| tile.is_a?(Bomb) }.count
-      tile.expose
       if bombs > 0
         tile.numerize(bombs)
       else
-        new_pos = adj_pos.select { |pos| !all_seen_tiles.include?(pos) }
-        queue.concat(new_pos)
+        queue.concat(adj_pos)
       end
-      count += 1
     end
+    @board.render
+
   end
 
   def game_over?
@@ -143,6 +159,6 @@ end
 
 if $PROGRAM_NAME == __FILE__
   b = Board.new
-  g = Game.new(b)
+  g = Game.new(b, 9, nil)
   g.move([5,5])
 end
