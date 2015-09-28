@@ -50,6 +50,10 @@ class Board
     deltas = [[-1, 0], [-1, 1], [-1, -1], [0, 1], [0, -1], [1, 0], [1, 1], [1, -1]]
     adj_tiles = deltas.map { |x1, y1| [x + x1, y +y1] }.select { |pos| on_board?(pos) }
   end
+
+  def bomb_count
+    p self.flatten.select { |tile| tile.is_a?(Bomb) }.count
+  end
 end
 
 class Tile
@@ -70,6 +74,7 @@ class Tile
     @flagged = flagged
     @exposed = false
     @numerized = nil
+    @symbol = "X"
   end
 
   def to_s
@@ -77,7 +82,7 @@ class Tile
       color = Tile.get_color(@numerized)
       @numerized.to_s.colorize(color)
     elsif @exposed
-      "X"
+      @symbol
     else
       " "
     end
@@ -97,21 +102,74 @@ class Tile
 end
 
 class Bomb < Tile
-  def to_s
-    "B"
+  def initialize
+    super
+    @symbol = "B"
   end
 end
 
 class Game
-  def initialize(board, size, bombs)
+  def initialize(size=9)
     @size = size
-    @bombs = bombs
-    @board = board
-    @board.setup(bombs)
+    @board = Board.new(size)
+    @board.setup
+    @bombs = @board.bomb_count
     @won = nil
+    @all_seen_tiles = []
   end
 
-  def move(pos)
+  def play
+    @board.render
+    until game_over?
+      command = get_command
+      pos = get_position
+      if command == :reveal
+        reveal(pos)
+      else
+        flag(pos)
+      end
+      @board.render
+    end
+  end
+
+  def get_command
+    loop do
+      puts "Reveal (1) or Flag (2)?"
+      command = gets.chomp
+      valid_commands = ["1", "2"]
+      if valid_commands.include?(command)
+        return num_to_command(command)
+      else
+        puts "invalid command."
+      end
+    end
+  end
+
+  def get_position
+    puts "give me a position (ex: 1,2)"
+    pos = gets.chomp
+    loop do
+      if valid_coord?(pos)
+        return pos.split(",").map { |coord| coord.to_i }
+      else
+        puts "invalid coordinate"
+      end
+    end
+  end
+
+  def valid_coord?(pos)
+    pos = pos.split(",")
+    pos_mapped = pos.map { |coord| coord.to_i }
+    pos.size == 2 && pos[0].to_i.to_s == pos[0] && pos[1].to_i.to_s == pos[1] &&
+    @board.on_board?(pos_mapped)
+  end
+
+  def num_to_command(num)
+    commands = { "1" => :reveal, "2" => :flag }
+    commands[num]
+  end
+
+  def reveal(pos)
     tile = @board[pos]
     if tile.is_a?(Bomb)
       @board.render
@@ -122,13 +180,16 @@ class Game
     end
   end
 
+  def flag(pos)
+
+  end
+
   def run(start)
-    all_seen_tiles = []
     queue = [start]
     until queue.empty?
       pos = queue.pop
-      next if all_seen_tiles.include?(pos)
-      all_seen_tiles << pos
+      next if @all_seen_tiles.include?(pos)
+      @all_seen_tiles << pos
       tile = @board[pos]
       tile.expose
       adj_pos = @board.find_adjacent_positions(pos)
@@ -140,8 +201,6 @@ class Game
         queue.concat(adj_pos)
       end
     end
-    @board.render
-
   end
 
   def game_over?
@@ -159,6 +218,7 @@ end
 
 if $PROGRAM_NAME == __FILE__
   b = Board.new
-  g = Game.new(b, 9, nil)
-  g.move([5,5])
+  g = Game.new(9)
+  b.bomb_count
+  g.play
 end
