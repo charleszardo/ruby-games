@@ -1,3 +1,5 @@
+require 'byebug'
+
 class Board
   attr_reader :grid
 
@@ -41,9 +43,10 @@ class Board
     pos.all? { |coord| coord >= 0 && coord < @size }
   end
 
-  def find_adjacent_tiles(tile)
-    # TODO
-    x, y = tile
+  def find_adjacent_positions(pos)
+    x, y = pos
+    deltas = [[-1, 0], [-1, 1], [-1, -1], [0, 1], [0, -1], [1, 0], [1, 1], [1, -1]]
+    adj_tiles = deltas.map { |x1, y1| [x + x1, y +y1] }.select { |pos| on_board?(pos) }
   end
 end
 
@@ -51,11 +54,14 @@ class Tile
   def initialize(flagged=false)
     @flagged = flagged
     @exposed = false
+    @numerized = nil
   end
 
   def to_s
     if @exposed
       "X"
+    elsif @numerized
+      @numerized.to_s
     else
       " "
     end
@@ -67,6 +73,10 @@ class Tile
 
   def exposed?
     @exposed
+  end
+
+  def numerize(num)
+    @numerized = num
   end
 end
 
@@ -87,27 +97,34 @@ class Game
 
   def move(pos)
     tile = @board[pos]
-    tile.expose
     if tile.is_a?(Bomb)
       return
     else
-
+      run(pos)
     end
   end
 
   def run(start)
     all_seen_tiles = [start]
     queue = [start]
-    until queue.empty?
-      tile = queue.pop
-      adj_tiles = @board.find_adjacent_tiles(tile)
+    count = 0
+    until queue.empty? || count > 10
+      @board.render
+      p " "
+      pos = queue.pop
+      all_seen_tiles << pos
+      tile = @board[pos]
+      adj_pos = @board.find_adjacent_positions(pos)
+      adj_tiles = adj_pos.map { |pos| @board[pos] }
       bombs = adj_tiles.select { |tile| tile.is_a?(Bomb) }.count
       tile.expose
       if bombs > 0
         tile.numerize(bombs)
       else
-        queue << adj_tiles
+        new_pos = adj_pos.select { |pos| !all_seen_tiles.include?(pos) }
+        queue.concat(new_pos)
       end
+      count += 1
     end
   end
 
@@ -122,4 +139,10 @@ class Game
     end
     false
   end
+end
+
+if $PROGRAM_NAME == __FILE__
+  b = Board.new
+  g = Game.new(b)
+  g.move([5,5])
 end
