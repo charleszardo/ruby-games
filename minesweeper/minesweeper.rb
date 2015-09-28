@@ -78,7 +78,9 @@ class Tile
   end
 
   def to_s
-    if @numerized
+    if @flagged
+      "F".colorize(:red)
+    elsif @numerized
       color = Tile.get_color(@numerized)
       @numerized.to_s.colorize(color)
     elsif @exposed
@@ -94,6 +96,14 @@ class Tile
 
   def exposed?
     @exposed
+  end
+
+  def flagged?
+    @flagged
+  end
+
+  def flag
+    @flagged = true
   end
 
   def numerize(num)
@@ -171,7 +181,9 @@ class Game
 
   def reveal(pos)
     tile = @board[pos]
-    if tile.is_a?(Bomb)
+    if tile.flagged?
+      puts "Tile is flagged.  Cannot be revealed."
+    elsif tile.is_a?(Bomb)
       @board.render
       puts "YA LOSE!!"
       return
@@ -181,16 +193,17 @@ class Game
   end
 
   def flag(pos)
-
+    tile = @board[pos]
+    tile.flag
   end
 
   def run(start)
     queue = [start]
     until queue.empty?
       pos = queue.pop
-      next if @all_seen_tiles.include?(pos)
-      @all_seen_tiles << pos
       tile = @board[pos]
+      next if @all_seen_tiles.include?(pos) || tile.flagged?
+      @all_seen_tiles << pos
       tile.expose
       adj_pos = @board.find_adjacent_positions(pos)
       adj_tiles = adj_pos.map { |pos| @board[pos] }
