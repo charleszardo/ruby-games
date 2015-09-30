@@ -52,7 +52,7 @@ class Board
   end
 
   def bomb_count
-    p self.flatten.select { |tile| tile.is_a?(Bomb) }.count
+    self.flatten.select { |tile| tile.is_a?(Bomb) }.count
   end
 end
 
@@ -140,6 +140,8 @@ class Game
       end
       @board.render
     end
+
+    puts "Congrats, you won!" if @won
   end
 
   def get_command
@@ -231,7 +233,7 @@ end
 
 if $PROGRAM_NAME == __FILE__
   b = Board.new
-  g = Game.new(9)
+  g = Game.new(5)
   b.bomb_count
   g.play
 end
