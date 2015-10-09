@@ -90,6 +90,10 @@ class KnightPathFinder
     @starting_pos = starting_pos
     @visited_positions = [starting_pos]
   end
+  
+  def reset
+    @visited_positions = [@starting_pos]
+  end
 
   def new_move_positions(pos)
     moves = KnightPathFinder.valid_moves(pos).select { |move| !@visited_positions.include?(move) }
@@ -124,11 +128,13 @@ class KnightPathFinder
       path << end_node.value
       end_node = end_node.parent
     end
-
+    
+    reset
     path.reverse
   end
 end
 
 kpf = KnightPathFinder.new([0,0])
 
-p kpf.find_path([3, 3])
+p kpf.find_path([7, 6]) # => [[0, 0], [1, 2], [2, 4], [3, 6], [5, 5], [7, 6]]
+p kpf.find_path([6, 2]) # => [[0, 0], [1, 2], [2, 0], [4, 1], [6, 2]]
