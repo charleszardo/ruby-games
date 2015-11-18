@@ -1,3 +1,6 @@
+require 'byebug'
+require 'colorize'
+
 class Board
   attr_reader :grid
 
@@ -27,7 +30,8 @@ class Board
     nil
   end
 
-  def setup(bombs=3)
+  def setup(bombs=nil)
+    bombs ||= @size ** 2 / 10
     bomb_list = []
     until bomb_list.size == bombs
       pos = Array.new(2) { rand(@size) }
@@ -41,21 +45,46 @@ class Board
     pos.all? { |coord| coord >= 0 && coord < @size }
   end
 
-  def find_adjacent_tiles(tile)
-    # TODO
-    x, y = tile
+  def find_adjacent_positions(pos)
+    x, y = pos
+    deltas = [[-1, 0], [-1, 1], [-1, -1], [0, 1], [0, -1], [1, 0], [1, 1], [1, -1]]
+    adj_tiles = deltas.map { |x1, y1| [x + x1, y +y1] }.select { |pos| on_board?(pos) }
+  end
+
+  def bomb_count
+    self.flatten.select { |tile| tile.is_a?(Bomb) }.count
   end
 end
 
 class Tile
+  def self.get_color(num)
+    colors = { 1 => :blue,
+               2 => :green,
+               3 => :red,
+               4 => :magenta,
+               5 => :light_blue,
+               6 => :cyan,
+               7 => :light_red,
+               8 => :yellow
+             }
+    colors[num]
+  end
+
   def initialize(flagged=false)
     @flagged = flagged
     @exposed = false
+    @numerized = nil
+    @symbol = "X"
   end
 
   def to_s
-    if @exposed
-      "X"
+    if @flagged
+      "F".colorize(:red)
+    elsif @numerized
+      color = Tile.get_color(@numerized)
+      @numerized.to_s.colorize(color)
+    elsif @exposed
+      @symbol
     else
       " "
     end
@@ -68,45 +97,124 @@ class Tile
   def exposed?
     @exposed
   end
+
+  def flagged?
+    @flagged
+  end
+
+  def flag
+    @flagged = true
+  end
+
+  def numerize(num)
+    @numerized = num
+  end
 end
 
 class Bomb < Tile
-  def to_s
-    "B"
+  def initialize
+    super
+    @symbol = "B"
   end
 end
 
 class Game
-  def initialize(board, size=9, bombs=3)
+  def initialize(size=9)
     @size = size
-    @bombs = bombs
-    @board = board
-    @board.setup(bombs)
+    @board = Board.new(size)
+    @board.setup
+    @bombs = @board.bomb_count
     @won = nil
+    @all_seen_tiles = []
   end
 
-  def move(pos)
-    tile = @board[pos]
+  def play
+    @board.render
+    until game_over?
+      command = get_command
+      pos = get_position
+      if command == :reveal
+        reveal(pos)
+      else
+        flag(pos)
+      end
+      @board.render
+    end
 
-    if tile.is_a?(Bomb)
-      return
-    else
+    puts "Congrats, you won!" if @won
+  end
 
+  def get_command
+    loop do
+      puts "Reveal (1) or Flag (2)?"
+      command = gets.chomp
+      valid_commands = ["1", "2"]
+      if valid_commands.include?(command)
+        return num_to_command(command)
+      else
+        puts "invalid command."
+      end
     end
   end
 
+  def get_position
+    puts "give me a position (ex: 1,2)"
+    pos = gets.chomp
+    loop do
+      if valid_coord?(pos)
+        return pos.split(",").map { |coord| coord.to_i }
+      else
+        puts "invalid coordinate"
+      end
+    end
+  end
+
+  def valid_coord?(pos)
+    pos = pos.split(",")
+    pos_mapped = pos.map { |coord| coord.to_i }
+    pos.size == 2 && pos[0].to_i.to_s == pos[0] && pos[1].to_i.to_s == pos[1] &&
+    @board.on_board?(pos_mapped)
+  end
+
+  def num_to_command(num)
+    commands = { "1" => :reveal, "2" => :flag }
+    commands[num]
+  end
+
+  def reveal(pos)
+    tile = @board[pos]
+
+    if tile.flagged?
+      puts "Tile is flagged.  Cannot be revealed."
+    elsif tile.is_a?(Bomb)
+      @board.render
+      puts "YA LOSE!!"
+      return
+    else
+      run(pos)
+    end
+  end
+
+  def flag(pos)
+    tile = @board[pos]
+    tile.flag
+  end
+
   def run(start)
-    all_seen_tiles = [start]
     queue = [start]
     until queue.empty?
-      tile = queue.pop
-      adj_tiles = @board.find_adjacent_tiles(tile)
-      bombs = adj_tiles.select { |tile| tile.is_a?(Bomb) }.count
+      pos = queue.pop
+      tile = @board[pos]
+      next if @all_seen_tiles.include?(pos) || tile.flagged?
+      @all_seen_tiles << pos
       tile.expose
+      adj_pos = @board.find_adjacent_positions(pos)
+      adj_tiles = adj_pos.map { |pos| @board[pos] }
+      bombs = adj_tiles.select { |tile| tile.is_a?(Bomb) }.count
       if bombs > 0
         tile.numerize(bombs)
       else
-        queue << adj_tiles
+        queue.concat(adj_pos)
       end
     end
   end
@@ -122,4 +230,11 @@ class Game
     end
     false
   end
+end
+
+if $PROGRAM_NAME == __FILE__
+  b = Board.new
+  g = Game.new(5)
+  b.bomb_count
+  g.play
 end
