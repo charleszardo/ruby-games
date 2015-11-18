@@ -87,7 +87,7 @@ class Game
 
   def move(pos)
     tile = @board[pos]
-    tile.expose
+
     if tile.is_a?(Bomb)
       return
     else
