@@ -200,20 +200,20 @@ class Player
   end
 
   def valid_selection?(selection, board_size)
-    pos = selection.split(",")
-    return false if pos.length != 2
+    return false if selection.length != 2
+    p "okay"
     begin
-      pos.each_with_index do |num, idx|
+      selection.each_with_index do |num, idx|
         num_int = num.to_i
         return false if num_int.to_s != num || !num_int.between?(0, board_size - 1)
-        pos[idx] = num_int
+        # pos[idx] = num_int
       end
     rescue NoMethodError
       return false
     end
-    pos
+    true
   end
-
+  
   def receive_match(card)
 
   end
@@ -221,18 +221,16 @@ end
 
 class Human < Player
   def select_card(board_size)
-    puts "select a card (format: 1,2)"
-    selection = nil
-    loop do
-      selection = gets.chomp
-      pos = valid_selection?(selection, board_size)
-      if pos
-        selection = pos
-        break
-      end
-      puts "invalid card. try again."
+    begin
+      puts "select a card (format: 1,2)"
+      selection = gets.chomp.split(",")
+      raise ArgumentError if !valid_selection?(selection, board_size)
+    rescue
+      puts "Invalid card. Try again."
+      retry
     end
-    selection
+    p selection
+    selection.map! { |loc| loc.to_i }
   end
 
   def select_difficulty
