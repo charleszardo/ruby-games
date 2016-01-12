@@ -120,9 +120,9 @@ class Bomb < Tile
 end
 
 class Game
-  def initialize(size=9)
+  def initialize(size=9, board=Board.new(size))
     @size = size
-    @board = Board.new(size)
+    @board = board
     @board.setup
     @bombs = @board.bomb_count
     @won = nil
@@ -241,8 +241,6 @@ class Game
 end
 
 if $PROGRAM_NAME == __FILE__
-  b = Board.new
   g = Game.new(5)
-  b.bomb_count
   g.play
 end
