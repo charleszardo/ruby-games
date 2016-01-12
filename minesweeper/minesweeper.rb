@@ -1,5 +1,6 @@
 require 'byebug'
 require 'colorize'
+require 'yaml'
 
 class Board
   attr_reader :grid
@@ -132,6 +133,10 @@ class Game
     @board.render
     until game_over?
       command = get_command
+      if command == :save
+        @board.render
+        next
+      end
       pos = get_position
       if command == :reveal
         reveal(pos)
@@ -146,10 +151,13 @@ class Game
 
   def get_command
     loop do
-      puts "Reveal (1) or Flag (2)?"
+      puts "Reveal (1), Flag (2), or Save (s)?"
       command = gets.chomp
       valid_commands = ["1", "2"]
-      if valid_commands.include?(command)
+      if command.downcase == "s"
+        puts self.to_yaml
+        return :save
+      elsif valid_commands.include?(command)
         return num_to_command(command)
       else
         puts "invalid command."
