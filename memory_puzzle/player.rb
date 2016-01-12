@@ -9,12 +9,9 @@ class Player
   end
 
   def valid_selection?(selection, board_size)
-    begin
-      return false if selection.length != 2 || selection.any? { |coord| !valid_coord?(coord, board_size)}
-    rescue NoMethodError
-      return false
-    end
-    true
+    selection.length == 2 && selection.all? { |coord| valid_coord?(coord, board_size)}
+  rescue
+    return false
   end
   
   def receive_match(card)
