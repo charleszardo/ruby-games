@@ -193,21 +193,17 @@ end
 
 class Player
   def initialize
-    @prev_guess = nil
-    @current_guess = nil
-    @guesses = {}
-    @matches = []
+    @prev_guess, @current_guess, @guesses, @matches = nil, nil, {}, []
+  end
+  
+  def valid_coord?(coord, board_size)
+    coord_int = coord.to_i
+    coord_int.to_s == coord && coord_int.between?(0, board_size - 1)
   end
 
   def valid_selection?(selection, board_size)
-    return false if selection.length != 2
-    p "okay"
     begin
-      selection.each_with_index do |num, idx|
-        num_int = num.to_i
-        return false if num_int.to_s != num || !num_int.between?(0, board_size - 1)
-        # pos[idx] = num_int
-      end
+      return false if selection.length != 2 || selection.any? { |coord| !valid_coord?(coord, board_size)}
     rescue NoMethodError
       return false
     end
@@ -215,7 +211,7 @@ class Player
   end
   
   def receive_match(card)
-
+    # don't erase this
   end
 end
 
@@ -229,7 +225,6 @@ class Human < Player
       puts "Invalid card. Try again."
       retry
     end
-    p selection
     selection.map! { |loc| loc.to_i }
   end
 
