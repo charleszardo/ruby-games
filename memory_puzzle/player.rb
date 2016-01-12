@@ -21,15 +21,13 @@ end
 
 class Human < Player
   def select_card(board_size)
-    begin
-      puts "select a card (format: 1,2)"
-      selection = gets.chomp.split(",")
-      raise ArgumentError if !valid_selection?(selection, board_size)
-    rescue
-      puts "Invalid card. Try again."
-      retry
-    end
+    puts "select a card (format: 1,2)"
+    selection = gets.chomp.split(",")
+    raise ArgumentError if !valid_selection?(selection, board_size)
     selection.map! { |loc| loc.to_i }
+  rescue
+    puts "Invalid card. Try again."
+    retry  
   end
 
   def select_difficulty
