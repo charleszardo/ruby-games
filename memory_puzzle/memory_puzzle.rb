@@ -236,14 +236,15 @@ class Human < Player
   end
 
   def select_difficulty
-    loop do
+    begin
       puts "select difficulty (4, 6, 8)"
-      begin
-        diff = gets.chomp.to_i
-        return diff if [4, 6, 8].include?(diff)
-      rescue
-      end
+      diff = gets.chomp.to_i
+      raise ArgumentError unless [4, 6, 8].include?(diff)
+    rescue
+      puts "Invalid selection!"
+      retry
     end
+    diff
   end
 end
 
@@ -309,6 +310,6 @@ end
 if __FILE__ == $PROGRAM_NAME
   h = Human.new
   c = Computer.new
-  g = Game.new(c)
+  g = Game.new(h)
   g.play
 end
