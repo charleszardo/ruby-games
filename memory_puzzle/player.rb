@@ -31,15 +31,13 @@ class Human < Player
   end
 
   def select_difficulty
-    begin
-      puts "select difficulty (4, 6, 8)"
-      diff = gets.chomp.to_i
-      raise ArgumentError unless [4, 6, 8].include?(diff)
-    rescue
-      puts "Invalid selection!"
-      retry
-    end
+    puts "select difficulty (4, 6, 8)"
+    diff = gets.chomp.to_i
+    raise ArgumentError unless [4, 6, 8].include?(diff)
     diff
+  rescue
+    puts "Invalid selection!"
+    retry
   end
 end
 
