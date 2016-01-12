@@ -154,7 +154,15 @@ class Game
       command = gets.chomp
       valid_commands = ["1", "2"]
       if command.downcase == "s"
-        puts self.to_yaml
+        this_game = self.to_yaml
+        this_board = board.to_yaml
+        objs = [self, board]
+        File.open("blah.yaml", "w") do |file|
+          (0..1).each do |index|
+            file.puts YAML::dump(objs[index])
+            file.puts ""
+          end
+        end
         return :save
       elsif valid_commands.include?(command)
         return num_to_command(command)
@@ -240,6 +248,19 @@ class Game
 end
 
 if $PROGRAM_NAME == __FILE__
-  g = Game.new(5)
-  g.play
+  puts "new game (N) or load game (L)?"
+  choice = gets.chomp
+  if choice == "N"
+    g = Game.new(5)
+    g.play
+  else
+    array = []
+    $/="\n\n"
+    File.open("blah.yaml", "r").each do |object|
+      array << YAML::load(object)
+    end
+    puts array
+    g = array[0]
+    g.play
+  end
 end
