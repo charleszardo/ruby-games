@@ -120,13 +120,12 @@ class Bomb < Tile
 end
 
 class Game
+  attr_reader :size, :board
+  
   def initialize(size=9, board=Board.new(size))
-    @size = size
-    @board = board
+    @size, @board, @won, @all_seen_tiles = size, board, nil, []
     @board.setup
     @bombs = @board.bomb_count
-    @won = nil
-    @all_seen_tiles = []
   end
 
   def play
