@@ -4,7 +4,7 @@ class Board
   def initialize
     size = 8
     @grid = Array.new(size) do |row|
-      Array.new(size)
+      Array.new(size) { "x"}
     end
   end
   
@@ -13,7 +13,7 @@ class Board
   end
 
   def []=(row, col, val)
-    @grid[row, col] = val
+    @grid[row][col] = val
   end
   
   def move(start_pos, end_pos)
