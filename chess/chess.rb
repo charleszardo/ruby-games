@@ -1,6 +1,10 @@
 require_relative 'piece'
 require_relative 'board'
+require_relative 'display'
 
+b = Board.new
+d = Display.new(b)
+d.print
 # b = Board.new
 # b.print
 #
