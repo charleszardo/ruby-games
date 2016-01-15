@@ -1,19 +1,27 @@
-require_relative 'piece'
 require_relative 'board'
-require_relative 'display'
+require_relative 'player'
 
-b = Board.new
-d = Display.new(b)
-d.print
-# b = Board.new
-# b.print
-#
-# puts " "
-# b[5,5] = "abc"
-# b.print
-# p b
-# b.move([5,5], [1,1])
-#
-# puts " "
-# b.print
-# p b[5,5]
+class Game
+  def initialize
+    @board = Board.new
+    @player = Player.new(@board)
+    @turns = 0
+  end
+
+  def run
+    puts "Mark all the spaces on the board!"
+    puts "WASD or arrow keys to move the cursor, enter or space to confirm."
+    until @turns == 10
+      p @turns
+      @turns += 1
+      pos = @player.move
+      puts pos
+      # @board.mark(pos)
+    end
+    puts "Hooray, the board is filled!"
+  end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  Game.new.run
+end

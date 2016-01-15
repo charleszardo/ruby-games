@@ -1,4 +1,5 @@
 require 'byebug'
+require_relative 'piece'
 
 class Board
   attr_reader :grid, :size
@@ -7,8 +8,9 @@ class Board
     @size = 8
     @grid = Array.new(size) do |row|
       Array.new(size) do |col|
+        t = [0,1].sample
         pos = [row, col]
-        Piece.new(pos)
+        t == 1 ? Piece.new(pos) : NullPiece.new
       end
     end
   end
@@ -19,6 +21,10 @@ class Board
 
   def []=(row, col, val)
     @grid[row][col] = val
+  end
+  
+  def rows
+    @grid
   end
   
   def move(start_pos, end_pos)
@@ -32,16 +38,15 @@ class Board
     retry
   end
   
-  def valid_pos(pos)
-    pos[0] >= 0 && pos[0] < size &&
-    pos[1] >= 0 && pos[1] < size
+  def in_bounds?(pos)
+    pos.all? { |num| num.between?(0,size)}
   end
   
   def valid_move(start_pos, end_pos)
     # debugger
     # will need to change fourth requirement depending on piece/rules
-    val_start = valid_pos(start_pos)
-    val_end = valid_pos(end_pos)
+    val_start = in_bounds?(start_pos)
+    val_end = in_bounds?(end_pos)
     nil_start = !self[start_pos[0], start_pos[1]].nil?
     # nil_end = self[end_pos[0], end_pos[1]].nil?
     val_start && val_end && nil_start #&& nil_end
