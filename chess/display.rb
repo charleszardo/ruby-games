@@ -7,7 +7,11 @@ class Display
   
   def print
     board.grid.each do |row|
-      puts row.join(" | ")
+      row_display = []
+      row.each do |space|
+          row_display << (space.is_a?(Piece) ? space.display : " ")
+      end
+      puts row_display.join(" | ")
     end
   end
 end
