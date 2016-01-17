@@ -1,5 +1,5 @@
 class Piece
-  attr_reader :display
+  attr_reader :display, :pos
   
   def initialize(pos)
     @pos = pos
@@ -19,12 +19,54 @@ class Piece
   end
 end
 
-class NullPiece
+class NullPiece < Piece
   def present?
     false
   end
 
   def to_s
     "   "
+  end
+end
+
+class Bishop < Piece
+  def initialize(pos)
+    super
+    @display = "B"
+  end
+end
+
+class Rook < Piece
+  def initialize(pos)
+    super
+    @display = "B"
+  end
+end
+
+class Queen < Piece
+  def initialize(pos)
+    super
+    @display = "B"
+  end
+end
+
+class Knight < Piece
+  def initialize(pos)
+    super
+    @display = "B"
+  end
+end
+
+class King < Piece
+  def initialize(pos)
+    super
+    @display = "B"
+  end
+end
+
+class Pawn < Piece
+  def initialize(pos)
+    super
+    @display = "B"
   end
 end
