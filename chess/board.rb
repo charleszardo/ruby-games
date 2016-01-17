@@ -8,9 +8,11 @@ class Board
     @size = 8
     @grid = Array.new(size) do |row|
       Array.new(size) do |col|
-        t = [0,1].sample
         pos = [row, col]
-        t == 1 ? Piece.new(pos) : NullPiece.new
+        [Piece.new(pos), NullPiece.new(pos),
+         Bishop.new(pos), Rook.new(pos),
+         Queen.new(pos), Knight.new(pos),
+         King.new(pos), Pawn.new(pos)].sample
       end
     end
   end
