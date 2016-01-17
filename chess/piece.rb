@@ -36,6 +36,20 @@ class NullPiece < Piece
   end
 end
 
+class SlidingPiece < Piece
+  def initialize(pos, color=nil)
+    @pos, @color = pos, color
+    @white, @black = "\u0020", "\u0020"
+  end
+end
+
+class SteppingPiece < Piece
+  def initialize(pos, color=nil)
+    @pos, @color = pos, color
+    @white, @black = "\u0020", "\u0020"
+  end
+end
+
 class Bishop < Piece
   def initialize(pos, color)
     @pos, @color = pos, color
