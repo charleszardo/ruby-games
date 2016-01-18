@@ -67,7 +67,7 @@ class Bishop < SlidingPiece
   end
   
   def move_dirs
-    
+    @angles
   end
 end
 
@@ -75,6 +75,10 @@ class Rook < SlidingPiece
   def initialize(pos, color, board)
     super
     @white, @black = "\u265C", "\u2656"
+  end
+  
+  def move_dirs
+    @straights
   end
 end
 
@@ -118,8 +122,10 @@ kn = Knight.new([2,2], :white, b)
 ki = King.new([3,3], :black, b)
 
 # p piece.to_s
-# p bishop.to_s
-# p bishop.move_dirs
+p bishop.to_s
+p bishop.move_dirs
+p ro.move_dirs
+p qu.move_dirs
 # p np.to_s
 # p pa.to_s
 # p ro.to_s
