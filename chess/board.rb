@@ -9,10 +9,13 @@ class Board
     @grid = Array.new(size) do |row|
       Array.new(size) do |col|
         pos = [row, col]
-        [Piece.new(pos), NullPiece.new(pos),
-         Bishop.new(pos), Rook.new(pos),
-         Queen.new(pos), Knight.new(pos),
-         King.new(pos), Pawn.new(pos)].sample
+        [Queen.new(pos, :white, self), NullPiece.new(pos, :black, self),
+         NullPiece.new(pos, :black, self), NullPiece.new(pos, :black, self),
+         NullPiece.new(pos, :black, self), NullPiece.new(pos, :black, self)].sample
+        # [Piece.new(pos), NullPiece.new(pos),
+#          Bishop.new(pos), Rook.new(pos),
+#          Queen.new(pos), Knight.new(pos),
+#          King.new(pos), Pawn.new(pos)].sample
       end
     end
   end
@@ -44,6 +47,10 @@ class Board
     pos.all? { |num| num.between?(0,size)}
   end
   
+  def empty?(pos)
+    self[pos[0], pos[1]].is_a?(NullPiece)
+  end
+  
   def valid_move(start_pos, end_pos)
     # debugger
     # will need to change fourth requirement depending on piece/rules
@@ -58,5 +65,7 @@ class Board
     @grid.each do |row|
       puts row.join(" | ")
     end
+    nil
   end
+  
 end
