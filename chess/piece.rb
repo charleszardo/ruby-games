@@ -67,10 +67,12 @@ class SlidingPiece < Piece
   
   def find_moves(test_pos, delta)
     next_move = add_coords(test_pos, delta)
-    if board.in_bounds?(next_move) && board.empty?(test_pos)
-      find_moves(next_move, delta) << next_move
-    else
+    if !board.in_bounds?(next_move)
       []
+    elsif board.empty?(test_pos)
+      [test_pos]
+    else
+      find_moves(next_move, delta) << next_move
     end
   end
 end
