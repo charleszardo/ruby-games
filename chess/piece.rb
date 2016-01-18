@@ -58,6 +58,7 @@ class SlidingPiece < Piece
   end
   
   def moves
+    # possible refactor with map
     potential = []
     move_dirs.each do |move|
       potential << find_moves(@pos, move)
@@ -81,6 +82,17 @@ class SteppingPiece < Piece
   def initialize(pos, color=nil, board)
     super
     @white, @black = "\u0020", "\u0020"
+  end
+  
+  def moves
+    potential = []
+    move_dirs.each do |delta|
+      next_move = add_coords(test_pos, delta)
+      if board.in_bounds?(next_move)
+        potential << next_move
+      end
+    end
+    potential
   end
 end
 
@@ -118,12 +130,24 @@ class Knight < Piece
     super
     @white, @black = "\u265E", "\u2658"
   end
+  
+  def move_dirs
+    # need to test
+    [[2, 1], [2, -1], [-2, 1], [-2, -1],
+     [1, 2], [1, -2], [-1, 2], [-1, -2]]
+  end
 end
 
 class King < Piece
   def initialize(pos, color, board)
     super
     @white, @black = "\u265A", "\u2654"
+  end
+  
+  def move_dirs
+    [[-1, 1], [-1, 0], [-1, -1],
+     [1, 1], [1, 0], [1, -1],
+     [0, 1], [0, -1]]
   end
 end
 
