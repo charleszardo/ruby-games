@@ -61,11 +61,39 @@ class Board
     val_start && val_end && nil_start #&& nil_end
   end
   
+  def in_check?(color)
+    king = find_piece(King, color)
+    king_pos = king.pos
+    check = false
+    @grid.each do |row|
+      row.each do |col|
+        space = self[row, col]
+        if !space.is_a?(NullPiece) && space.color != color &&
+          space.moves.include?(king_pos)
+          check = true
+          break
+      end
+    end
+    check
+  end
+  
+  def find_piece(piece, color)
+    pieces = []
+    @grid.each do |row|
+      row.each do |col|
+        space = self[row, col]
+        if space.is_a?(piece) && space.color == color
+          pieces << space
+        end
+      end
+    end
+    pieces
+  end
+  
   def print
     @grid.each do |row|
       puts row.join(" | ")
     end
     nil
   end
-  
 end
