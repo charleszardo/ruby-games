@@ -25,6 +25,11 @@ class Piece
   def to_s
     " #{display} "
   end
+  
+  def add_coords(coord1, coord2)
+    [coord1[0] + coord2[0],
+     coord1[1] + coord2[1]]
+  end
 end
 
 class NullPiece < Piece
@@ -50,6 +55,23 @@ class SlidingPiece < Piece
   
   def move_dirs
     @straights.concat(@angles)
+  end
+  
+  def moves
+    potential = []
+    move_dirs.each do |move|
+      potential << find_moves(@pos, move)
+    end
+    potential
+  end
+  
+  def find_moves(test_pos, delta)
+    next_move = add_coords(test_pos, delta)
+    if board.in_bounds?(next_move) && board.empty?(test_pos)
+      find_moves(next_move, delta) << next_move
+    else
+      []
+    end
   end
 end
 
@@ -110,22 +132,22 @@ class Pawn < Piece
   end
 end
 
-b = "board"
-
-piece = Piece.new([1,1], :black, b)
-bishop = Bishop.new([2,2], :white, b)
-np = NullPiece.new([3,3], nil, b)
-pa = Pawn.new([1,1], :black, b)
-ro = Rook.new([1,1], :white, b)
-qu = Queen.new([1,1], :black, b)
-kn = Knight.new([2,2], :white, b)
-ki = King.new([3,3], :black, b)
+# b = Board.new
+# p b
+# piece = Piece.new([1,1], :black, b)
+# bishop = Bishop.new([2,2], :white, b)
+# np = NullPiece.new([3,3], nil, b)
+# pa = Pawn.new([1,1], :black, b)
+# ro = Rook.new([1,1], :white, b)
+# qu = Queen.new([1,1], :black, b)
+# kn = Knight.new([2,2], :white, b)
+# ki = King.new([3,3], :black, b)
 
 # p piece.to_s
-p bishop.to_s
-p bishop.move_dirs
-p ro.move_dirs
-p qu.move_dirs
+# p bishop.to_s
+# p bishop.move_dirs
+# p ro.move_dirs
+# p qu.move_dirs
 # p np.to_s
 # p pa.to_s
 # p ro.to_s
