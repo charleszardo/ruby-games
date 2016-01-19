@@ -8,25 +8,26 @@ class Board
     @size = 8
     @grid = Array.new(size) { |row| set_row(row, self) }
   end
-
-  def [](row, col)
-    @grid[row][col]
+  
+  def [](pos)
+    @grid[pos[0]][pos[1]]
   end
 
-  def []=(row, col, val)
-    @grid[row][col] = val
+  def []=(pos, val)
+    puts 'here'
+    @grid[pos[0]][pos[1]] = val
   end
-
+  
   def rows
     @grid
   end
 
   def move(start_pos, end_pos)
     raise 'invalid move' if !valid_move(start_pos, end_pos)
-    piece = self[start_pos[0], start_pos[1]]
+    piece = self[start_pos]
     piece.move(end_pos)
-    self[start_pos[0], start_pos[1]] = nil
-    self[end_pos[0], end_pos[1]] = piece
+    self[start_pos] = nil
+    self[end_pos] = piece
   rescue
     puts "try again"
     retry
@@ -37,7 +38,7 @@ class Board
   end
 
   def empty?(pos)
-    self[pos[0], pos[1]].is_a?(NullPiece)
+    self[pos].is_a?(NullPiece)
   end
 
   def valid_move(start_pos, end_pos)
@@ -45,18 +46,19 @@ class Board
     # will need to change fourth requirement depending on piece/rules
     val_start = in_bounds?(start_pos)
     val_end = in_bounds?(end_pos)
-    nil_start = !self[start_pos[0], start_pos[1]].nil?
+    nil_start = !self[start_pos].nil?
     # nil_end = self[end_pos[0], end_pos[1]].nil?
     val_start && val_end && nil_start #&& nil_end
   end
 
   def in_check?(color)
+    debugger
     king = find_piece(King, color)
     king_pos = king.pos
     check = false
     @grid.each do |row|
       row.each do |col|
-        space = self[row, col]
+        space = self[[row, col]]
         if !space.is_a?(NullPiece) && space.color != color &&
           space.moves.include?(king_pos)
           check = true
@@ -69,9 +71,9 @@ class Board
 
   def find_piece(piece, color)
     pieces = []
-    @grid.each do |row|
-      row.each do |col|
-        space = self[row, col]
+    @grid.each_with_index do |row, row_idx|
+      row.each_with_index do |col, col_idx|
+        space = self[[row_idx, col_idx]]
         if space.is_a?(piece) && space.color == color
           pieces << space
         end
