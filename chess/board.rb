@@ -6,18 +6,7 @@ class Board
 
   def initialize
     @size = 8
-    @grid = Array.new(size) do |row|
-      if row == 0 || row == 7
-        back_row(row, color, self)
-      elsif row == 1 || row == 6
-        front_row(row, color, self)
-      else
-        Array.new(size) do |col|
-          pos = [row, col]
-          NullPiece.new(pos, nil, self)
-        end
-      end
-    end
+    @grid = Array.new(size) { |row| set_row(row, self) }
   end
 
   def [](row, col)
@@ -92,46 +81,30 @@ class Board
   end
 
   def print
-    @grid.each do |row|
-      puts row.join(" | ")
-    end
+    @grid.each { |row| puts row.join(" | ") }
     nil
   end
   
-  def create_row(row, board)
+  def set_row(row, board)
     color = row < 2 ? :black : :white
     pieces = nil
     if row == 0 || row == 7
       pieces = [Rook, Knight, Bishop, King, Queen, Bishop, Knight, Rook]
       pieces.reverse! if color == :white
-      populate_row(pieces, row, color, board)
     elsif row == 1 || row == 6
-      
+      pieces = Array.new(size) { Pawn }
     else
-      
+      pieces = Array.new(size) { NullPiece }
     end
+    
+    populate_row(pieces, row, color, board)
   end
   
   def populate_row(pieces, row, color, board)
-    
-  end
-  
-  def back_row(row, color, board)
     row_pieces = []
     col = 0
-    
-    while col < 8
+    while col < size
       row_pieces << pieces[col].new([row, col], color, board)
-      col += 1
-    end
-    row_pieces
-  end
-  
-  def front_row(row, color, board)
-    row_pieces = []
-    col = 0
-    while col < 8
-      row_pieces << Pawn.new([row, col], color, board)
       col += 1
     end
     row_pieces
