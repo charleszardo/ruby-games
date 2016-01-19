@@ -53,7 +53,7 @@ class Board
 
   def in_check?(color)
     debugger
-    king = find_piece(King, color)[0]
+    king = find_pieces(King, color)[0]
     king_pos = king.pos
     check = false
     @grid.each_with_index do |row, row_idx|
@@ -68,8 +68,17 @@ class Board
     end
     check
   end
+  
+  def checkmate?(color)
+    if in_check?(color)
+      pieces = find_pieces(Piece, color)
+      pieces.all? { |piece| piece.valid_moves.empty? }
+    else
+      false
+    end
+  end
 
-  def find_piece(piece, color)
+  def find_pieces(piece, color)
     pieces = []
     @grid.each_with_index do |row, row_idx|
       row.each_with_index do |col, col_idx|
