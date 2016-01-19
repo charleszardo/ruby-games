@@ -2,7 +2,7 @@ class Piece
   attr_reader :pos, :color, :board, :white, :black
   
   def initialize(pos, color, board)
-    @pos, @color, @board = pos, color, board
+    @pos, @color, @board, @moved = pos, color, board, false
     @white, @black = "\u0078", "\u0078"
   end
   
@@ -11,11 +11,27 @@ class Piece
   end
   
   def move(pos)
+    @moved = true
     @pos = pos
+  end
+  
+  def moves
+    potential = []
+    move_dirs.each do |delta|
+      next_move = add_coords(test_pos, delta)
+      if board.in_bounds?(next_move)
+        potential << next_move
+      end
+    end
+    potential
   end
 
   def present?
     true
+  end
+  
+  def space_empty?(coord)
+    board[coord].empty?
   end
   
   def display
@@ -83,17 +99,6 @@ class SteppingPiece < Piece
     super
     @white, @black = "\u0020", "\u0020"
   end
-  
-  def moves
-    potential = []
-    move_dirs.each do |delta|
-      next_move = add_coords(test_pos, delta)
-      if board.in_bounds?(next_move)
-        potential << next_move
-      end
-    end
-    potential
-  end
 end
 
 class Bishop < SlidingPiece
@@ -156,6 +161,27 @@ class Pawn < Piece
     super
     @white, @black = "\u265F", "\u2659"
   end
+  
+  def move_dirs
+    dir = color == :black ? 1 : -1
+    straights = [[dir, 0]]
+    straights << [dir * 2, 0] if !@moved
+    angles = [[dir, -1], [dir, 1]]
+    
+    straights.select! do |diff|
+      new_pos = add_coords(diff, pos)
+      space_empty?(new_pos)
+    end 
+    
+    angles.select! do |diff|
+      new_pos = add_coords(diff, pos)
+      !space_empty?(new_pos)
+    end
+    
+    straights.concat(angles)
+  end
+  
+  
 end
 
 # b = Board.new
