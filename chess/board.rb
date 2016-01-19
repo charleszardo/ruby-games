@@ -53,12 +53,12 @@ class Board
 
   def in_check?(color)
     debugger
-    king = find_piece(King, color)
+    king = find_piece(King, color)[0]
     king_pos = king.pos
     check = false
-    @grid.each do |row|
-      row.each do |col|
-        space = self[[row, col]]
+    @grid.each_with_index do |row, row_idx|
+      row.each_with_index do |col, col_idx|
+        space = self[[row_idx, col_idx]]
         if !space.is_a?(NullPiece) && space.color != color &&
           space.moves.include?(king_pos)
           check = true
