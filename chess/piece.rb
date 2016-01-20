@@ -30,6 +30,17 @@ class Piece
   
   def move_dirs
   end
+  
+  def valid_moves
+    #incomplete?
+    moves.select { |move| move_into_check?(move) } 
+  end
+  
+  def move_into_check?(end_pos)
+    dup_board = Board.dup(@board)
+    dup_board.move(@pos, end_pos)
+    dup_board.in_check?(@color)
+  end
 
   def present?
     true
