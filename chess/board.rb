@@ -2,11 +2,16 @@ require 'byebug'
 require_relative 'piece'
 
 class Board
+  def self.dup(board)
+    dup_grid = board.grid
+    Board.new(dup_grid)
+  end
+  
   attr_reader :grid, :size
 
-  def initialize
+  def initialize(grid=nil)
     @size = 8
-    @grid = Array.new(size) { |row| set_row(row, self) }
+    @grid = grid || Array.new(size) { |row| set_row(row, self) }
   end
   
   def [](pos)
@@ -52,7 +57,7 @@ class Board
   end
 
   def in_check?(color)
-    debugger
+    # debugger
     king = find_pieces(King, color)[0]
     king_pos = king.pos
     check = false
