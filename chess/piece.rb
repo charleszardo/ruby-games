@@ -16,14 +16,19 @@ class Piece
   end
   
   def moves
+    # possible refactor with map
     potential = []
     move_dirs.each do |delta|
-      next_move = add_coords(test_pos, delta)
-      if board.in_bounds?(next_move)
-        potential << next_move
-      end
+      next_move = add_coords(@pos, delta)
+      potential << next_move if board.in_bounds?(next_move)
     end
     potential
+  end
+  
+  def find_moves(test_pos, delta)
+  end
+  
+  def move_dirs
   end
 
   def present?
@@ -31,7 +36,7 @@ class Piece
   end
   
   def space_empty?(coord)
-    board[coord].empty?
+    board.empty?(coord)
   end
   
   def display
