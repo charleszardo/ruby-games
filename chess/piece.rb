@@ -20,25 +20,27 @@ class Piece
     potential = []
     move_dirs.each do |delta|
       next_move = add_coords(@pos, delta)
-      potential << next_move if board.in_bounds?(next_move)
+      potential << next_move if board.valid_move?(@pos, next_move)
     end
     potential
   end
   
   def find_moves(test_pos, delta)
+    # holder
   end
   
   def move_dirs
+    # holder
   end
   
   def valid_moves
     #incomplete?
-    moves.select { |move| move_into_check?(move) } 
+    moves.select { |move| !move_into_check?(move) }
   end
   
   def move_into_check?(end_pos)
     dup_board = Board.dup(@board)
-    dup_board.move(@pos, end_pos)
+    dup_board.move!(@pos, end_pos)
     dup_board.in_check?(@color)
   end
 
@@ -100,7 +102,9 @@ class SlidingPiece < Piece
   
   def find_moves(test_pos, delta)
     next_move = add_coords(test_pos, delta)
-    if !board.in_bounds?(next_move)
+    p test_pos
+    p next_move
+    if !board.valid_move?(test_pos, next_move)
       []
     elsif board.empty?(test_pos)
       [test_pos]
