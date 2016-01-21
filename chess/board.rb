@@ -3,8 +3,17 @@ require_relative 'piece'
 
 class Board
   def self.dup(board)
-    dup_grid = board.grid
-    Board.new(dup_grid)
+    dup_board = Board.new
+    template = board.grid
+    template.each_with_index do |row, row_idx|
+      row.each_with_index do |col, col_idx|
+        loc = [row_idx, col_idx]
+        piece, pos, color = col.class, col.pos, col.color
+        piece = piece.new(pos, color, dup_board)
+        dup_board[loc] = piece
+      end
+    end
+    dup_board
   end
   
   attr_reader :grid, :size
@@ -19,7 +28,6 @@ class Board
   end
 
   def []=(pos, val)
-    puts 'here'
     @grid[pos[0]][pos[1]] = val
   end
   
