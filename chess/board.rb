@@ -47,14 +47,8 @@ class Board
   end
 
   def move(start_pos, end_pos)
-    raise 'invalid move' if !valid_move?(start_pos, end_pos) || !self[start_pos].valid_moves.include?(end_pos)
-    piece = self[start_pos]
-    piece.move(end_pos)
-    self[start_pos] = NullPiece.new(start_pos, nil, self)
-    self[end_pos] = piece
-  rescue
-    puts "try again"
-    retry
+    raise 'invalid move' if !self[start_pos].valid_moves.include?(end_pos)
+    move!(start_pos, end_pos)
   end
 
   def in_bounds?(pos)
