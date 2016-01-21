@@ -34,7 +34,6 @@ class Piece
   end
   
   def valid_moves
-    #incomplete?
     moves.select { |move| !move_into_check?(move) }
   end
   
@@ -102,8 +101,6 @@ class SlidingPiece < Piece
   
   def find_moves(test_pos, delta)
     next_move = add_coords(test_pos, delta)
-    p test_pos
-    p next_move
     if !board.valid_move?(test_pos, next_move)
       []
     elsif board.empty?(test_pos)
@@ -203,26 +200,3 @@ class Pawn < Piece
   
   
 end
-
-# b = Board.new
-# p b
-# piece = Piece.new([1,1], :black, b)
-# bishop = Bishop.new([2,2], :white, b)
-# np = NullPiece.new([3,3], nil, b)
-# pa = Pawn.new([1,1], :black, b)
-# ro = Rook.new([1,1], :white, b)
-# qu = Queen.new([1,1], :black, b)
-# kn = Knight.new([2,2], :white, b)
-# ki = King.new([3,3], :black, b)
-
-# p piece.to_s
-# p bishop.to_s
-# p bishop.move_dirs
-# p ro.move_dirs
-# p qu.move_dirs
-# p np.to_s
-# p pa.to_s
-# p ro.to_s
-# p qu.to_s
-# p kn.to_s
-# p ki.to_s
