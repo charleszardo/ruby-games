@@ -39,7 +39,7 @@ class Board
     raise 'invalid move' if !valid_move(start_pos, end_pos)
     piece = self[start_pos]
     piece.move(end_pos)
-    self[start_pos] = nil
+    self[start_pos] = NullPiece.new(start_pos, nil, self)
     self[end_pos] = piece
   rescue
     puts "try again"
@@ -105,7 +105,7 @@ class Board
   end
 
   def print
-    @grid.each { |row| puts row.join(" | ") }
+    @grid.each {|row| puts row.join(" | ") }
     nil
   end
   
