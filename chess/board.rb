@@ -34,16 +34,28 @@ class Board
   def rows
     @grid
   end
-
-  def move(start_pos, end_pos)
-    raise 'invalid move' if !valid_move(start_pos, end_pos)
+  
+  def move!(start_pos, end_pos)
+    raise 'invalid move' if !valid_move?(start_pos, end_pos)
     piece = self[start_pos]
     piece.move(end_pos)
     self[start_pos] = NullPiece.new(start_pos, nil, self)
     self[end_pos] = piece
-  rescue
-    puts "try again"
-    retry
+  # rescue
+  #   puts "try again"
+  #   retry
+  end
+
+  def move(start_pos, end_pos)
+    raise 'invalid move' if !valid_move?(start_pos, end_pos)
+    piece = self[start_pos]
+    p piece.valid_moves.include?(end_pos)
+    piece.move(end_pos)
+    self[start_pos] = NullPiece.new(start_pos, nil, self)
+    self[end_pos] = piece
+  # rescue
+  #   puts "try again"
+  #   retry
   end
 
   def in_bounds?(pos)
@@ -54,14 +66,15 @@ class Board
     self[pos].is_a?(NullPiece)
   end
 
-  def valid_move(start_pos, end_pos)
+  def valid_move?(start_pos, end_pos)
     # debugger
     # will need to change fourth requirement depending on piece/rules
-    val_start = in_bounds?(start_pos)
-    val_end = in_bounds?(end_pos)
-    nil_start = !self[start_pos].nil?
+    return false if !in_bounds?(start_pos)
+    return false if !in_bounds?(end_pos)
+    return false if self[start_pos].class == NullPiece
     # nil_end = self[end_pos[0], end_pos[1]].nil?
-    val_start && val_end && nil_start #&& nil_end
+    # val_start && val_end && nil_start #&& nil_end
+    true
   end
 
   def in_check?(color)
