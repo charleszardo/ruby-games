@@ -41,21 +41,21 @@ class Board
     piece.move(end_pos)
     self[start_pos] = NullPiece.new(start_pos, nil, self)
     self[end_pos] = piece
-  # rescue
-  #   puts "try again"
-  #   retry
+  rescue
+    puts "try again"
+    retry
   end
 
   def move(start_pos, end_pos)
-    raise 'invalid move' if !valid_move?(start_pos, end_pos)
+    raise 'invalid move' if !valid_move?(start_pos, end_pos) || !self[start_pos].valid_moves.include?(end_pos)
     piece = self[start_pos]
     p piece.valid_moves.include?(end_pos)
     piece.move(end_pos)
     self[start_pos] = NullPiece.new(start_pos, nil, self)
     self[end_pos] = piece
-  # rescue
-  #   puts "try again"
-  #   retry
+  rescue
+    puts "try again"
+    retry
   end
 
   def in_bounds?(pos)
