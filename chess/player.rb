@@ -3,6 +3,9 @@ require_relative "display"
 class Player
   def initialize(board, color)
     @display = Display.new(board)
+    if color == :black
+      @display = Display.new(board, true)
+    end
     @color = color
     @msg = ""
   end

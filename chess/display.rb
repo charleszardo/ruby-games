@@ -6,9 +6,14 @@ class Display
   
   attr_reader :board
 
-  def initialize(board)
+  def initialize(board, player = nil)
     @board = board
     @cursor_pos = [0, 0]
+    @color = :light_red
+    if player
+      @cursor_pos = [7,7]
+      @color = :light_yellow
+    end
   end
 
   def build_grid
@@ -26,7 +31,7 @@ class Display
 
   def colors_for(i, j)
     if [i, j] == @cursor_pos
-      bg = :light_red
+      bg = @color
     elsif (i + j).odd?
       bg = :light_blue
     else
@@ -36,7 +41,7 @@ class Display
   end
 
   def render(msg="")
-    # system("clear")
+    system("clear")
     puts "Arrow keys, WASD, or vim to move, space or enter to confirm."
     puts msg
     build_grid.each do |row| 
