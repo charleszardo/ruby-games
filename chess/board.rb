@@ -46,16 +46,19 @@ class Board
   end
 
   def move(start_pos, end_pos)
-    @error_msg = ""
+    puts "HERE I AM"
+    puts start_pos
+    puts end_pos
+    puts self[start_pos].valid_moves
     if !self[start_pos].valid_moves.include?(end_pos)
+      puts "INVALID"
       raise 'invalid move'
     end
-    puts "2"
     move!(start_pos, end_pos)
   end
 
   def in_bounds?(pos)
-    pos.all? { |num| num.between?(0,size)}
+    pos.all? { |num| num.between?(0,size-1)}
   end
 
   def empty?(pos)
@@ -93,6 +96,10 @@ class Board
     else
       false
     end
+  end
+  
+  def in_checkmate?
+    checkmate?(:white) || checkmate?(:black)
   end
 
   def find_pieces(piece, color)
