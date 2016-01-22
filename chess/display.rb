@@ -35,10 +35,10 @@ class Display
     { background: bg, color: :white }
   end
 
-  def render
-    system("clear")
-    puts "Fill the grid!"
+  def render(msg="")
+    # system("clear")
     puts "Arrow keys, WASD, or vim to move, space or enter to confirm."
+    puts msg
     build_grid.each do |row| 
       puts row.join
       # row.each do |space|

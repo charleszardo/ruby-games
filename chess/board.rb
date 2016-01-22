@@ -16,7 +16,7 @@ class Board
     dup_board
   end
   
-  attr_reader :grid, :size
+  attr_reader :grid, :size, :error_msg
 
   def initialize(grid=nil)
     @size = 8
@@ -42,12 +42,15 @@ class Board
     self[start_pos] = NullPiece.new(start_pos, nil, self)
     self[end_pos] = piece
   rescue
-    puts "try again"
     retry
   end
 
   def move(start_pos, end_pos)
-    raise 'invalid move' if !self[start_pos].valid_moves.include?(end_pos)
+    @error_msg = ""
+    if !self[start_pos].valid_moves.include?(end_pos)
+      raise 'invalid move'
+    end
+    puts "2"
     move!(start_pos, end_pos)
   end
 
