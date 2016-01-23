@@ -30,7 +30,7 @@ class Piece
   end
   
   def move_dirs
-    # holder
+    []
   end
   
   def valid_moves
@@ -94,19 +94,20 @@ class SlidingPiece < Piece
     # possible refactor with map
     potential = []
     move_dirs.each do |move|
-      potential << find_moves(@pos, move)
+      moves = find_moves(@pos, @pos, move)
+      potential.concat(moves) if !moves.empty?
     end
     potential
   end
   
-  def find_moves(test_pos, delta)
+  def find_moves(start_pos, test_pos, delta)
     next_move = add_coords(test_pos, delta)
-    if !board.valid_move?(test_pos, next_move)
+    if !board.valid_move?(start_pos, next_move)
       []
-    elsif board.empty?(test_pos)
-      [test_pos]
+    elsif @board[next_move].class != NullPiece
+      [next_move]
     else
-      find_moves(next_move, delta) << next_move
+      find_moves(start_pos, next_move, delta) << next_move
     end
   end
 end
