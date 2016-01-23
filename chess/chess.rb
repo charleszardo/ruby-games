@@ -2,18 +2,19 @@ require_relative 'board'
 require_relative 'player'
 
 class Game
+  attr_reader :board
+  
   def initialize
     @board = Board.new
     @player1 = Player.new(@board, :white)
     @player2 = Player.new(@board, :black)
-    @turns = 0
     @current_player = @player1
+    @turns = 0
   end
   
   def turn
     start_pos = @current_player.move
     end_pos = @current_player.move
-    puts [start_pos, end_pos]
     @board.move(start_pos, end_pos)
   rescue
     @current_player.receive_msg("invalid move. please try again")
@@ -26,7 +27,8 @@ class Game
 
   def run
     puts "WASD or arrow keys to move the cursor, enter or space to confirm."
-    until @turns == 3
+    # until @board.in_checkmate?
+    until @turns >= 4
       turn
       change_players
       @turns += 1
@@ -35,7 +37,11 @@ class Game
 end
 
 if __FILE__ == $PROGRAM_NAME
-  Game.new.run
+  Game.new.run  #
+  # g = Game.new
+  # b = g.board
+  # b.print
+  # p b[[7,3]].moves
 end
 
 # b = Board.new
