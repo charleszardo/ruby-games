@@ -46,12 +46,8 @@ class Board
   end
 
   def move(start_pos, end_pos)
-    puts "HERE I AM"
-    puts start_pos
-    puts end_pos
-    puts self[start_pos].valid_moves
-    if !self[start_pos].valid_moves.include?(end_pos)
-      puts "INVALID"
+    vmoves = self[start_pos].valid_moves
+    if !vmoves.include?(end_pos)
       raise 'invalid move'
     end
     move!(start_pos, end_pos)
@@ -79,10 +75,12 @@ class Board
     @grid.each_with_index do |row, row_idx|
       row.each_with_index do |col, col_idx|
         space = self[[row_idx, col_idx]]
-        if !space.is_a?(NullPiece) && space.color != color &&
-          space.moves.include?(king_pos)
-          check = true
-          break
+        if !space.is_a?(NullPiece) && space.color != color
+          if space.moves.include?(king_pos)
+            puts space
+            check = true
+            break
+          end
         end
       end
     end
