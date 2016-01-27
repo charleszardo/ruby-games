@@ -181,6 +181,7 @@ class Pawn < Piece
   end
   
   def move_dirs
+    # double check to make user color-based direction is correct
     dir = color == :black ? 1 : -1
     straights = [[dir, 0]]
     straights << [dir * 2, 0] if !@moved
