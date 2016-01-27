@@ -60,11 +60,17 @@ class Board
   def empty?(pos)
     self[pos].is_a?(NullPiece)
   end
+  
+  def same_color?(pos1, pos2)
+    return false if [pos1, pos2].any? { |pos| self[pos].class === NullPiece}
+    self[pos1].color === self[pos2].color
+  end
 
   def valid_move?(start_pos, end_pos)
     return false if !in_bounds?(start_pos)
     return false if !in_bounds?(end_pos)
-    return false if self[start_pos].class == NullPiece
+    return false if self[start_pos].class === NullPiece
+    return false if same_color?(start_pos, end_pos)
     true
   end
 
