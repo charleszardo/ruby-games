@@ -1,10 +1,12 @@
-require 'card'
+require_relative 'card'
 
 class Deck
+  attr_reader :deck
+  
   def self.build_deck
     deck = []
     suits = [:spades, :hearts, :diamonds, :clubs]
-    vals = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, :jack, :queen, :king, :ace]
+    vals = [2, 3, 4, 5, 6, 7, 8, 9, 10, :jack, :queen, :king, :ace]
     
     suits.each do |suit|
       vals.each do |val|
