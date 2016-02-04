@@ -13,11 +13,14 @@ class Deck
         deck << Card.new(suit, val)
       end
     end
-    deck
+    deck.shuffle
   end
   
   def initialize
-    puts "hi"
     @deck = Deck.build_deck
+  end
+  
+  def deal_hand
+    
   end
 end
