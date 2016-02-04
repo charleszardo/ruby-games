@@ -17,6 +17,7 @@ class Deck
   end
   
   def initialize
+    puts "hi"
     @deck = Deck.build_deck
   end
 end
