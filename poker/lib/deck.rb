@@ -1,4 +1,5 @@
 require_relative 'card'
+require_relative 'hand'
 
 class Deck
   attr_reader :deck
@@ -20,7 +21,7 @@ class Deck
     @deck = Deck.build_deck
   end
   
-  def deal_hand
-    
+  def deal
+    deck.pop
   end
 end
