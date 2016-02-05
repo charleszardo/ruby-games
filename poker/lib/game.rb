@@ -2,11 +2,14 @@ require_relative 'player'
 require_relative 'deck'
 
 class Game
+  attr_reader :init_coins, :active_players
+  
   def initialize
     @player1 = Player.new
     @player2 = Player.new
     @deck = Deck.new
     @active_players = [@player1, @player2]
+    @players_in_round = [@player1, @player2]
     @init_coins = 20
     @bet = 1
   end
@@ -26,9 +29,14 @@ class Game
   end
   
   def round
+    @players_in_round = @active_players.dup
     @active_players.each do |player|
-      player.peform_action
+      handle_action(player.peform_action)
     end
+  end
+  
+  def handle_action(action)
+    
   end
   
   def deal_hands
