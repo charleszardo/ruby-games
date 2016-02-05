@@ -13,4 +13,16 @@ class Player
   def receive_coins(num)
     @coins += num
   end
+  
+  def perform_action
+    action = {
+      "B" => :bet,
+      "F" => :fold,
+      "S" => :see,
+      "R" => :raise
+    }
+    
+    puts "bet (B), fold (F), see current bet (S), raise (R)"
+    action = gets.chomp.upcase
+  end
 end
