@@ -16,6 +16,34 @@ class Player
     @hand.add_card(card)
   end
   
+  def discard
+    puts "would you like to discard any cards? (Y/N)"
+    answer = gets.chomp.upcase
+    if answer == "Y"
+      handle_discard
+    elsif answer == "N"
+      []
+    else
+      raise "invalid response"
+    end
+  rescue
+    retry
+  end
+  
+  def handle_discard
+    puts "which card(s) would you like to discard?  num separated by comma. no more than 3!"
+    selection = gets.chomp.split(",").map(&:to_i)
+    new_hand = []
+    @hand.each_with_index do |card, idx|
+      idx += 1
+      new_hand << card unless selection.include?(idx)
+    end
+    new_hand
+  rescue
+    puts "an error occurred due to response.  try again, chump."
+    retry
+  end
+  
   def receive_coins(num)
     @coins += num
   end
