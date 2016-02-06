@@ -33,12 +33,16 @@ class Game
     @active_players.each do |player|
       discards = player.discard
       deal_cards(player, discards.size)
-      handle_action(player.peform_action)
+      handle_action(player, player.peform_action)
     end
   end
   
-  def handle_action(action)
-    
+  def handle_action(player, action)
+    case action
+    when :bet
+    when :fold
+    when :see
+    when :raise
   end
   
   def deal_cards(players=@active_players, num=5)
