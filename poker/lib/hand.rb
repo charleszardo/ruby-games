@@ -39,4 +39,16 @@ class Hand
       end
     end
   end
+  
+  def royal_flush?
+    same_suit?
+  end
+  
+  def same_suit?
+    suits = {}
+    self.cards.each do |card|
+      suits[card.suit] = card.suit || true
+    end
+    suits.keys.size == 1
+  end
 end
