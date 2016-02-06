@@ -52,6 +52,7 @@ class Player
     puts "bet (B), fold (F), see current bet (S), raise (R)"
     action = gets.chomp.upcase
     raise "invalid action" if !valid_action?(action)
+    actions[action]
   rescue
     retry
   end
