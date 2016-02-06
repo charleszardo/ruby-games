@@ -21,7 +21,7 @@ class Game
   
   def setup
     distribute_coins
-    deal_hands
+    deal_cards
   end
   
   def distribute_coins
@@ -31,6 +31,8 @@ class Game
   def round
     @players_in_round = @active_players.dup
     @active_players.each do |player|
+      discards = player.discard
+      deal_cards(player, discards.size)
       handle_action(player.peform_action)
     end
   end
@@ -39,9 +41,9 @@ class Game
     
   end
   
-  def deal_hands
-    5.times do
-      @active_players.each do |player|
+  def deal_cards(players=@active_players, num=5)
+    num.times do
+     players.each do |player|
         card = @deck.deal
         player.receive_card(card)
       end
