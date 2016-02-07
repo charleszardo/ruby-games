@@ -1,4 +1,6 @@
 class Hand
+  attr_reader :cards
+  
   def initialize
     @cards = []
     @hand_types = [:royal_flush,
@@ -46,9 +48,13 @@ class Hand
   
   def same_suit?
     suits = {}
-    self.cards.each do |card|
+    cards.each do |card|
       suits[card.suit] = card.suit || true
     end
     suits.keys.size == 1
+  end
+  
+  def royal_count
+    cards
   end
 end
