@@ -7,7 +7,7 @@ describe Hand do
   let(:card2) { double('card', :suit => :spades) }
   let(:card3) { double('card', :suit => :spades) }
   let(:card4) { double('card', :suit => :spades) }
-  let(:card5) { double('card', :suit => :hearts) }
+  let(:card5) { double('card', :suit => :spades) }
   let(:card6) { double('card', :suit => :diamonds) }
   
   describe "size" do
@@ -20,9 +20,10 @@ describe Hand do
   
   describe "same_suit?" do
     it "correctly determines if cards are same suit" do
-      cards = [card1, card2, card3, card4, card5]
+      cards = [card1, card2, card3, card4, card5, card6]
       base_suit = card1.suit
-      expect(cards[0..3].all? { |card| card.suit == base_suit }).to be true
+      expect(cards[1..4].all? { |card| card.suit == base_suit }).to be true
+      expect(cards[2..5].all? { |card| card.suit == base_suit }).to be false
     end
   end
 end
