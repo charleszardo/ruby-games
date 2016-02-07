@@ -43,7 +43,7 @@ class Hand
   end
   
   def royal_flush?
-    same_suit?
+    same_suit? && royal_count >= 5
   end
   
   def same_suit?
@@ -55,6 +55,6 @@ class Hand
   end
   
   def royal_count
-    cards
+    cards.count { |card| card.val >= 10 }
   end
 end
