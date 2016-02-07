@@ -7,7 +7,7 @@ class Deck
   def self.build_deck
     deck = []
     suits = [:spades, :hearts, :diamonds, :clubs]
-    vals = [2, 3, 4, 5, 6, 7, 8, 9, 10, :jack, :queen, :king, :ace]
+    vals = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
     
     suits.each do |suit|
       vals.each do |val|
