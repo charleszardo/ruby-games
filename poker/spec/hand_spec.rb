@@ -53,4 +53,26 @@ describe Hand do
       expect(hand3.royal_flush?).to be false
     end
   end
+  
+  describe "#straight_flush?" do
+    let(:card1) { double('card', :suit => :spades, :val => 2) }
+    let(:card2) { double('card', :suit => :spades, :val => 3) }
+    let(:card3) { double('card', :suit => :spades, :val => 4) }
+    let(:card4) { double('card', :suit => :spades, :val => 5) }
+    let(:card5) { double('card', :suit => :spades, :val => 6) }
+    let(:card6) { double('card', :suit => :hearts, :val => 6) }
+    let(:card7) { double('card', :suit => :spades, :val => 7) }
+    it "correctly determines a straight flush" do
+      cards = [card1, card2, card3, card4, card5]
+      cards.each { |card| hand1.add_card(card) }
+      cards = [card1, card2, card3, card4, card6]
+      cards.each { |card| hand2.add_card(card) }
+      cards = [card1, card2, card3, card4, card7]
+      cards.each { |card| hand3.add_card(card) }
+      
+      expect(hand1.straight_flush?).to be true
+      expect(hand2.straight_flush?).to be false
+      expect(hand3.straight_flush?).to be false
+    end
+  end
 end
