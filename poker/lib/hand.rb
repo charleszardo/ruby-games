@@ -46,16 +46,8 @@ class Hand
     cards.count { |card| card.val >= 10 }
   end
   
-  def same_suit?
-    suits = {}
-    cards.each do |card|
-      suits[card.suit] = card.suit || true
-    end
-    suits.keys.size == 1
-  end
-  
   def royal_flush?
-    same_suit? && royal_count >= 5
+    flush? && royal_count >= 5
   end
   
   def straight_flush?
@@ -71,7 +63,11 @@ class Hand
   end
   
   def flush?
-    
+    suits = {}
+    cards.each do |card|
+      suits[card.suit] = card.suit || true
+    end
+    suits.keys.size == 1
   end
   
   def straight?
