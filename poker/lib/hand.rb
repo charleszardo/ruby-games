@@ -62,6 +62,15 @@ class Hand
     true
   end
   
+  def kinds
+    vals = {}
+    cards.each do |card|
+      val = card.val
+      vals[val] = (vals[val] || 0) + 1
+    end
+    vals
+  end
+  
   def royal_flush?
     flush? && royal_count >= 5
   end
@@ -71,8 +80,10 @@ class Hand
   end
   
   def four_of_a_kind?
-    
+    kinds.values.include?(4)
   end
+  
+
   
   def full_house?
     
