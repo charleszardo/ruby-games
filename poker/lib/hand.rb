@@ -46,12 +46,20 @@ class Hand
     cards.count { |card| card.val >= 10 }
   end
   
-  def consecutive?(vals)
+  def consecutive?(cards=cards)
+    vals = cards.map { |card| card.val }
     vals = vals.sort
-    if vals.includes?(14) && vals.includes?(2)
+    if vals.include?(14) && vals.include?(2)
       vals.pop
       vals.shift(1)
     end
+    
+    prev = nil
+    vals.each do |n|
+      return false if prev && n - prev != 1
+      prev = n
+    end
+    true
   end
   
   def royal_flush?
@@ -59,7 +67,7 @@ class Hand
   end
   
   def straight_flush?
-    
+    flush? && consecutive?
   end
   
   def four_of_a_kind?
