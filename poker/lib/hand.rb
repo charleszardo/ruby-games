@@ -118,7 +118,7 @@ class Hand
   end
   
   def one_pair?
-    
+    n_of_a_kind?(2)
   end
   
   def high_card?

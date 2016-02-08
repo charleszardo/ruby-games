@@ -182,14 +182,32 @@ describe Hand do
     let(:card4) { double('card', :suit => :diamonds, :val => 4) }
     let(:card5) { double('card', :suit => :spades, :val => 4) }
     let(:card6) { double('card', :suit => :hearts, :val => 13) }
-    it "correctly determines a four of a kind" do
+    it "correctly determines a two pair" do
       cards = [card1, card2, card3, card4, card5]
       cards.each { |card| hand1.add_card(card) }
       cards = [card1, card2, card3, card5, card6]
       cards.each { |card| hand2.add_card(card) }
       
       expect(hand1.two_pair?).to be true
-      expect(hand2.full_house?).to be false
+      expect(hand2.two_pair?).to be false
+    end
+  end
+  
+  describe "#one_pair?" do
+    let(:card1) { double('card', :suit => :hearts, :val => 2) }
+    let(:card2) { double('card', :suit => :spades, :val => 2) }
+    let(:card3) { double('card', :suit => :clubs, :val => 5) }
+    let(:card4) { double('card', :suit => :diamonds, :val => 6) }
+    let(:card5) { double('card', :suit => :spades, :val => 7) }
+    let(:card6) { double('card', :suit => :hearts, :val => 13) }
+    it "correctly determines a one pair" do
+      cards = [card1, card2, card3, card4, card5]
+      cards.each { |card| hand1.add_card(card) }
+      cards = [card1, card3, card4, card5, card6]
+      cards.each { |card| hand2.add_card(card) }
+      
+      expect(hand1.one_pair?).to be true
+      expect(hand2.one_pair?).to be false
     end
   end
 end
