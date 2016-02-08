@@ -75,4 +75,46 @@ describe Hand do
       expect(hand3.straight_flush?).to be false
     end
   end
+  
+  describe "#consecutive?" do
+    let(:card1) { double('card', :suit => :spades, :val => 2) }
+    let(:card2) { double('card', :suit => :spades, :val => 3) }
+    let(:card3) { double('card', :suit => :spades, :val => 4) }
+    let(:card4) { double('card', :suit => :spades, :val => 5) }
+    let(:card5) { double('card', :suit => :spades, :val => 6) }
+    let(:card6) { double('card', :suit => :hearts, :val => 6) }
+    let(:card7) { double('card', :suit => :spades, :val => 8) }
+    it "correctly determines a consecutive series of cards" do
+      cards = [card1, card2, card3, card4, card5]
+      cards.each { |card| hand1.add_card(card) }
+      cards = [card1, card2, card3, card4, card6]
+      cards.each { |card| hand2.add_card(card) }
+      cards = [card1, card2, card3, card4, card7]
+      cards.each { |card| hand3.add_card(card) }
+      
+      expect(hand1.consecutive?).to be true
+      expect(hand2.consecutive?).to be true
+      expect(hand3.consecutive?).to be false
+    end
+    
+    context "with ace" do
+      let(:card6) { double('card', :suit => :hearts, :val => 14) }
+      let(:card7) { double('card', :suit => :spades, :val => 10) }
+      let(:card8) { double('card', :suit => :spades, :val => 11) }
+      let(:card9) { double('card', :suit => :spades, :val => 12) }
+      let(:card10) { double('card', :suit => :spades, :val => 13) }
+      it "correctly determines a consecutive series of cards" do
+        cards = [card1, card2, card3, card4, card6]
+        cards.each { |card| hand1.add_card(card) }
+        cards = [card2, card3, card4, card5, card6]
+        cards.each { |card| hand2.add_card(card) }
+        cards = [card6, card7, card8, card9, card10]
+        cards.each { |card| hand3.add_card(card) }
+      
+        expect(hand1.consecutive?).to be true
+        expect(hand2.consecutive?).to be false
+        expect(hand3.consecutive?).to be true
+      end
+    end
+  end
 end
