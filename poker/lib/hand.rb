@@ -71,6 +71,10 @@ class Hand
     vals
   end
   
+  def n_of_a_kind?(n)
+    kinds.values.include?(n)
+  end
+  
   def royal_flush?
     flush? && royal_count >= 5
   end
@@ -80,7 +84,7 @@ class Hand
   end
   
   def four_of_a_kind?
-    kinds.values.include?(4)
+    n_of_a_kind?(4)
   end
   
   def full_house?
@@ -106,7 +110,7 @@ class Hand
   end
   
   def three_of_a_kind?
-    
+    n_of_a_kind?(3)
   end
   
   def two_pair?
