@@ -114,7 +114,7 @@ class Hand
   end
   
   def two_pair?
-    
+    kinds.values.count(2) == 2
   end
   
   def one_pair?
