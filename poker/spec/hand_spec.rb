@@ -21,13 +21,13 @@ describe Hand do
     end
   end
   
-  describe "#same_suit?" do
+  describe "#flush?" do
     it "correctly determines if cards are same suit" do
       cards = [card1, card2, card3, card4, card5, card6]
       cards[0..4].each { |card| hand1.add_card(card)}
       cards[1..5].each { |card| hand2.add_card(card)}
-      expect(hand1.same_suit?).to be true
-      expect(hand2.same_suit?).to be false
+      expect(hand1.flush?).to be true
+      expect(hand2.flush?).to be false
     end
   end
   
