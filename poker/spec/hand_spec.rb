@@ -174,4 +174,22 @@ describe Hand do
       expect(hand2.three_of_a_kind?).to be false
     end
   end
+  
+  describe "#two_pair?" do
+    let(:card1) { double('card', :suit => :hearts, :val => 2) }
+    let(:card2) { double('card', :suit => :spades, :val => 2) }
+    let(:card3) { double('card', :suit => :clubs, :val => 5) }
+    let(:card4) { double('card', :suit => :diamonds, :val => 4) }
+    let(:card5) { double('card', :suit => :spades, :val => 4) }
+    let(:card6) { double('card', :suit => :hearts, :val => 13) }
+    it "correctly determines a four of a kind" do
+      cards = [card1, card2, card3, card4, card5]
+      cards.each { |card| hand1.add_card(card) }
+      cards = [card1, card2, card3, card5, card6]
+      cards.each { |card| hand2.add_card(card) }
+      
+      expect(hand1.two_pair?).to be true
+      expect(hand2.full_house?).to be false
+    end
+  end
 end
