@@ -71,7 +71,21 @@ class Hand
   end
   
   def straight?
+    vals = []
+    cards.each do |card|
+      return false if vals.include?(card)
+      vals << card.val
+    end
     
+    all_in_row?(vals)
+  end
+  
+  def all_in_row?(vals)
+    vals = vals.sort
+    if vals.includes?(14) && vals.includes?(2)
+      vals.pop
+      vals.shift(1)
+    end
   end
   
   def three_of_a_kind?
