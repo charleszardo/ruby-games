@@ -83,10 +83,8 @@ class Hand
     kinds.values.include?(4)
   end
   
-
-  
   def full_house?
-    
+    kinds.values.include?(3) && kinds.values.include?(2)
   end
   
   def flush?
