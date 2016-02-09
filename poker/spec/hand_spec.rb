@@ -70,7 +70,7 @@ describe Hand do
       cards = [card1, card2, card3, card4, card7]
       cards.each { |card| hand3.add_card(card) }
       
-      expect(hand1.straight_flush?).to be true
+      expect(hand1.straight_flush?).to be_truthy
       expect(hand2.straight_flush?).to be false
       expect(hand3.straight_flush?).to be false
     end
@@ -92,8 +92,8 @@ describe Hand do
       cards = [card1, card2, card3, card4, card7]
       cards.each { |card| hand3.add_card(card) }
       
-      expect(hand1.consecutive?).to be true
-      expect(hand2.consecutive?).to be true
+      expect(hand1.consecutive?).to be_truthy
+      expect(hand2.consecutive?).to be_truthy 
       expect(hand3.consecutive?).to be false
     end
     
@@ -111,9 +111,9 @@ describe Hand do
         cards = [card6, card7, card8, card9, card10]
         cards.each { |card| hand3.add_card(card) }
       
-        expect(hand1.consecutive?).to be true
+        expect(hand1.consecutive?).to be_truthy
         expect(hand2.consecutive?).to be false
-        expect(hand3.consecutive?).to be true
+        expect(hand3.consecutive?).to be_truthy
       end
     end
   end
