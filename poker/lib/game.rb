@@ -13,6 +13,7 @@ class Game
     @init_coins = 20
     @bet = 1
     @current_bet = 1
+    @pot = 0
   end
   
   def play
@@ -32,6 +33,8 @@ class Game
   def round
     @players_in_round = @active_players.dup
     @current_bet = @bet.dup
+    @pot = 0
+    2.times { betting_round }
   end
   
   def betting_round
@@ -49,9 +52,10 @@ class Game
     when :fold
       @players_in_round.delete(player)
     when :see
-      player.pay(@current_bet)
+      @pot += player.pay(@current_bet)
     when :raise
       @current_bet = raise(player)
+      @pot += @current_bet
     end
   end
   
