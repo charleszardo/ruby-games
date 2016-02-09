@@ -59,7 +59,7 @@ class Hand
       return false if prev && n - prev != 1
       prev = n
     end
-    highest_card(cards)
+    highest_card(cards).val
   end
   
   def kinds
@@ -80,7 +80,8 @@ class Hand
   end
   
   def n_of_a_kind?(n)
-    kinds.values.include?(n)
+    num = kinds.select { |k, v| kinds[k] == n }
+    num.empty? ? false : num.keys[0]
   end
   
   def royal_flush?
