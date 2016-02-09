@@ -21,58 +21,11 @@ describe Hand do
     end
   end
   
-  describe "#flush?" do
-    it "correctly determines if cards are same suit" do
-      cards = [card1, card2, card3, card4, card5, card6]
-      cards[0..4].each { |card| hand1.add_card(card)}
-      cards[1..5].each { |card| hand2.add_card(card)}
-      expect(hand1.flush?).to be_truthy
-      expect(hand2.flush?).to be false
-    end
-  end
-  
   describe "#royal_count" do
     it "correctly counts number of royalty" do
       cards = [card1, card2, card3, card4, card7]
       cards[0..4].each { |card| hand1.add_card(card)}
       expect(hand1.royal_count).to eq(4)
-    end
-  end
-  
-  describe "#royal_flush?" do
-    it "correctly determines a royal flush" do
-      cards = [card1, card2, card3, card4, card5]
-      cards.each { |card| hand1.add_card(card) }
-      cards = [card1, card2, card3, card4, card6]
-      cards.each { |card| hand2.add_card(card) }
-      cards = [card1, card2, card3, card4, card7]
-      cards.each { |card| hand3.add_card(card) }
-      
-      expect(hand1.royal_flush?).to be true
-      expect(hand2.royal_flush?).to be false
-      expect(hand3.royal_flush?).to be false
-    end
-  end
-  
-  describe "#straight_flush?" do
-    let(:card1) { double('card', :suit => :spades, :val => 2) }
-    let(:card2) { double('card', :suit => :spades, :val => 3) }
-    let(:card3) { double('card', :suit => :spades, :val => 4) }
-    let(:card4) { double('card', :suit => :spades, :val => 5) }
-    let(:card5) { double('card', :suit => :spades, :val => 6) }
-    let(:card6) { double('card', :suit => :hearts, :val => 6) }
-    let(:card7) { double('card', :suit => :spades, :val => 7) }
-    it "correctly determines a straight flush" do
-      cards = [card1, card2, card3, card4, card5]
-      cards.each { |card| hand1.add_card(card) }
-      cards = [card1, card2, card3, card4, card6]
-      cards.each { |card| hand2.add_card(card) }
-      cards = [card1, card2, card3, card4, card7]
-      cards.each { |card| hand3.add_card(card) }
-      
-      expect(hand1.straight_flush?).to be_truthy
-      expect(hand2.straight_flush?).to be false
-      expect(hand3.straight_flush?).to be false
     end
   end
   
@@ -118,6 +71,43 @@ describe Hand do
     end
   end
   
+  describe "#royal_flush?" do
+    it "correctly determines a royal flush" do
+      cards = [card1, card2, card3, card4, card5]
+      cards.each { |card| hand1.add_card(card) }
+      cards = [card1, card2, card3, card4, card6]
+      cards.each { |card| hand2.add_card(card) }
+      cards = [card1, card2, card3, card4, card7]
+      cards.each { |card| hand3.add_card(card) }
+      
+      expect(hand1.royal_flush?).to be true
+      expect(hand2.royal_flush?).to be false
+      expect(hand3.royal_flush?).to be false
+    end
+  end
+  
+  describe "#straight_flush?" do
+    let(:card1) { double('card', :suit => :spades, :val => 2) }
+    let(:card2) { double('card', :suit => :spades, :val => 3) }
+    let(:card3) { double('card', :suit => :spades, :val => 4) }
+    let(:card4) { double('card', :suit => :spades, :val => 5) }
+    let(:card5) { double('card', :suit => :spades, :val => 6) }
+    let(:card6) { double('card', :suit => :hearts, :val => 6) }
+    let(:card7) { double('card', :suit => :spades, :val => 7) }
+    it "correctly determines a straight flush" do
+      cards = [card1, card2, card3, card4, card5]
+      cards.each { |card| hand1.add_card(card) }
+      cards = [card1, card2, card3, card4, card6]
+      cards.each { |card| hand2.add_card(card) }
+      cards = [card1, card2, card3, card4, card7]
+      cards.each { |card| hand3.add_card(card) }
+      
+      expect(hand1.straight_flush?).to be_truthy
+      expect(hand2.straight_flush?).to be false
+      expect(hand3.straight_flush?).to be false
+    end
+  end
+  
   describe "#four_of_a_kind?" do
     let(:card1) { double('card', :suit => :hearts, :val => 2) }
     let(:card2) { double('card', :suit => :spades, :val => 2) }
@@ -155,6 +145,20 @@ describe Hand do
       expect(hand2.full_house?).to be false
       expect(hand3.full_house?).to be false
     end
+  end
+  
+  describe "#flush?" do
+    it "correctly determines if cards are same suit" do
+      cards = [card1, card2, card3, card4, card5, card6]
+      cards[0..4].each { |card| hand1.add_card(card)}
+      cards[1..5].each { |card| hand2.add_card(card)}
+      expect(hand1.flush?).to be_truthy
+      expect(hand2.flush?).to be false
+    end
+  end
+  
+  describe "#straight" do
+    
   end
   
   describe "#three_of_a_kind?" do
