@@ -35,6 +35,8 @@ class Game
     @current_bet = @bet.dup
     @pot = 0
     2.times { betting_round }
+    determine_round_winner
+    payout(player)
   end
   
   def betting_round
@@ -45,6 +47,14 @@ class Game
         deal_cards(player, discards.size)
       end
     end
+  end
+  
+  def determine_round_winner
+    
+  end
+  
+  def payout(player)
+    
   end
   
   def handle_action(player, action)
