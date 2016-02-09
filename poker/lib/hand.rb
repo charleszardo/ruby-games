@@ -59,7 +59,7 @@ class Hand
       return false if prev && n - prev != 1
       prev = n
     end
-    true
+    vals.last
   end
   
   def kinds
@@ -80,7 +80,8 @@ class Hand
   end
   
   def straight_flush?
-    flush? && consecutive?
+    return consecutive? if flush?
+    false
   end
   
   def four_of_a_kind?
