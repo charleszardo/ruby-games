@@ -131,7 +131,7 @@ describe Hand do
       cards = [card1, card2, card3, card5, card6]
       cards.each { |card| hand2.add_card(card) }
       
-      expect(hand1.four_of_a_kind?).to be true
+      expect(hand1.four_of_a_kind?).to be_truthy
       expect(hand2.four_of_a_kind?).to be false
     end
   end
@@ -143,7 +143,7 @@ describe Hand do
     let(:card4) { double('card', :suit => :diamonds, :val => 4) }
     let(:card5) { double('card', :suit => :spades, :val => 4) }
     let(:card6) { double('card', :suit => :hearts, :val => 13) }
-    it "correctly determines a four of a kind" do
+    it "correctly determines a full house" do
       cards = [card1, card2, card3, card4, card5]
       cards.each { |card| hand1.add_card(card) }
       cards = [card1, card2, card3, card5, card6]
@@ -170,7 +170,7 @@ describe Hand do
       cards = [card1, card2, card4, card5, card6]
       cards.each { |card| hand2.add_card(card) }
       
-      expect(hand1.three_of_a_kind?).to be true
+      expect(hand1.three_of_a_kind?).to be_truthy
       expect(hand2.three_of_a_kind?).to be false
     end
   end
@@ -188,7 +188,7 @@ describe Hand do
       cards = [card1, card2, card3, card5, card6]
       cards.each { |card| hand2.add_card(card) }
       
-      expect(hand1.two_pair?).to be true
+      expect(hand1.two_pair?).to be_truthy
       expect(hand2.two_pair?).to be false
     end
   end
@@ -206,7 +206,7 @@ describe Hand do
       cards = [card1, card3, card4, card5, card6]
       cards.each { |card| hand2.add_card(card) }
       
-      expect(hand1.one_pair?).to be true
+      expect(hand1.one_pair?).to be_truthy
       expect(hand2.one_pair?).to be false
     end
   end
