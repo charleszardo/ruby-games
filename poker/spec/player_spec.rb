@@ -6,7 +6,7 @@ describe Player do
   describe "#valid_action?" do
     it "determines a valid action" do
       expect(player.valid_action?("xyz")).to eq(false)
-      expect(player.valid_action?("B")).to eq(true)
+      expect(player.valid_action?("F")).to eq(true)
     end
     
   end
