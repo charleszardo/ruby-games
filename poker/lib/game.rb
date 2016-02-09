@@ -12,6 +12,7 @@ class Game
     @players_in_round = [@player1, @player2]
     @init_coins = 20
     @bet = 1
+    @current_bet = 1
   end
   
   def play
@@ -30,19 +31,34 @@ class Game
   
   def round
     @players_in_round = @active_players.dup
+    @current_bet = @bet.dup
     @active_players.each do |player|
-      discards = player.discard
-      deal_cards(player, discards.size)
-      handle_action(player, player.peform_action)
+      handle_action(player, player.peform_action(@current_bet))
+      unless action == :fold
+        discards = player.discard
+        deal_cards(player, discards.size)
+      end
     end
   end
   
   def handle_action(player, action)
     case action
-    when :bet
     when :fold
+      @players_in_round.delete(player)
     when :see
+      player.pay(@current_bet)
     when :raise
+      @current_bet = raise(player)
+    end
+  end
+  
+  def raise(player)
+    puts "how much?"
+    val = player.request_val.to_i
+    raise "invalid value" if val <= @bet || val % @bet != 0
+  rescue
+    puts "invalid amount, please retry"
+    retry
   end
   
   def deal_cards(players=@active_players, num=5)
