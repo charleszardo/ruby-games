@@ -59,7 +59,7 @@ class Hand
       return false if prev && n - prev != 1
       prev = n
     end
-    vals.last
+    highest_card(cards)
   end
   
   def kinds
@@ -69,6 +69,14 @@ class Hand
       vals[val] = (vals[val] || 0) + 1
     end
     vals
+  end
+  
+  def highest_card(cards=cards)
+    high = nil;
+    cards.each do |card|
+      high = card if !high || card.val > high.val
+    end
+    high
   end
   
   def n_of_a_kind?(n)
