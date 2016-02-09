@@ -228,8 +228,8 @@ describe Hand do
       cards = [card1, card3, card4, card5, card6]
       cards.each { |card| hand2.add_card(card) }
       
-      expect(hand1.high_card?).to be 7
-      expect(hand2.high_card?).to be 13
+      expect(hand1.high_card?.val).to be 7
+      expect(hand2.high_card?.val).to be 13
     end
   end
 end

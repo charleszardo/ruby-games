@@ -145,6 +145,6 @@ class Hand
   end
   
   def high_card?
-    kinds.keys.max
+    highest_card
   end
 end
