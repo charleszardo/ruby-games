@@ -5,7 +5,6 @@ class Player
     @hand = Hand.new
     @coins = 0
     @actions = {
-      "B" => :bet,
       "F" => :fold,
       "S" => :see,
       "R" => :raise
@@ -48,16 +47,21 @@ class Player
     @coins += num
   end
   
-  def perform_action
-    puts "bet (B), fold (F), see current bet (S), raise (R)"
+  def perform_action(bet=0)
+    puts "fold (F), see current bet (S), raise (R)"
     action = gets.chomp.upcase
     raise "invalid action" if !valid_action?(action)
-    actions[action]
+    action = actions[action]
+    raise "not enough coin!"  if (action == :see || action == :raise) && @coins < bet
   rescue
     retry
   end
   
   def valid_action?(action)
     @actions.keys.include?(action)
+  end
+  
+  def pay(amount)
+    
   end
 end
