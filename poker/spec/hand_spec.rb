@@ -26,7 +26,7 @@ describe Hand do
       cards = [card1, card2, card3, card4, card5, card6]
       cards[0..4].each { |card| hand1.add_card(card)}
       cards[1..5].each { |card| hand2.add_card(card)}
-      expect(hand1.flush?).to be true
+      expect(hand1.flush?).to be_truthy
       expect(hand2.flush?).to be false
     end
   end
@@ -151,7 +151,7 @@ describe Hand do
       cards = [card1, card2, card4, card5, card6]
       cards.each { |card| hand3.add_card(card) }
       
-      expect(hand1.full_house?).to be true
+      expect(hand1.full_house?).to be_truthy
       expect(hand2.full_house?).to be false
       expect(hand3.full_house?).to be false
     end

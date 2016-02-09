@@ -98,7 +98,8 @@ class Hand
   end
   
   def full_house?
-    kinds.values.include?(3) && kinds.values.include?(2)
+    return n_of_a_kind?(3) if kinds.values.include?(3) && kinds.values.include?(2)
+    false
   end
   
   def flush?
@@ -106,7 +107,7 @@ class Hand
     cards.each do |card|
       suits[card.suit] = card.suit || true
     end
-    suits.keys.size == 1
+    suits.keys.size == 1 ? highest_card : false
   end
   
   def straight?
