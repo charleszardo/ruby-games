@@ -32,7 +32,10 @@ class Game
   def round
     @players_in_round = @active_players.dup
     @current_bet = @bet.dup
-    @active_players.each do |player|
+  end
+  
+  def betting_round
+    @players_in_round.each do |player|
       handle_action(player, player.peform_action(@current_bet))
       unless action == :fold
         discards = player.discard
