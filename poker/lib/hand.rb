@@ -111,13 +111,7 @@ class Hand
   end
   
   def straight?
-    vals = []
-    cards.each do |card|
-      return false if vals.include?(card)
-      vals << card.val
-    end
-    
-    consecutive?(vals)
+    consecutive?
   end
   
   def three_of_a_kind?
@@ -125,7 +119,25 @@ class Hand
   end
   
   def two_pair?
-    kinds.values.count(2) == 2
+    return false unless kinds.values.count(2) == 2
+    
+    vals = {}
+    cards.each do |card|
+      val = card.val
+      vals[val] = vals[val] || []
+      vals[val] << { card: card, val: val }
+    end
+    high_card = nil
+    high_val = nil
+    
+    vals.each do |k, v|
+      card_obj = v[0]
+      if high_val.nil? || card_obj[:val] > high_val
+        high_card = card_obj[:card]
+        high_val = card_obj[:val]
+      end
+    end
+    high_card
   end
   
   def one_pair?
