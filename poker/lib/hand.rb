@@ -147,4 +147,9 @@ class Hand
   def high_card?
     highest_card
   end
+  
+  def display
+    cards = @cards.map { |card| card.display }
+    puts cards.join(", ")
+  end
 end
