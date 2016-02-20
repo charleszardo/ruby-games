@@ -31,8 +31,8 @@ class Game
   end
   
   def round
-    @players_in_round = @active_players.dup
-    @current_bet = @bet.dup
+    @players_in_round = @active_players
+    @current_bet = @bet
     @pot = 0
     2.times { betting_round }
     determine_round_winner
@@ -41,7 +41,8 @@ class Game
   
   def betting_round
     @players_in_round.each do |player|
-      handle_action(player, player.peform_action(@current_bet))
+      player.display_hand
+      action = handle_action(player, player.perform_action(@current_bet))
       unless action == :fold
         discards = player.discard
         deal_cards(player, discards.size)
