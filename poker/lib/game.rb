@@ -45,7 +45,9 @@ class Game
       action = handle_action(player, player.perform_action(@current_bet))
       unless action == :fold
         discards = player.discard
-        deal_cards(player, discards.size)
+        (5 - discards.size).times do
+          deal_card(player)
+        end
       end
     end
   end
@@ -86,5 +88,10 @@ class Game
         player.receive_card(card)
       end
     end
+  end
+  
+  def deal_card(player)
+    card = @deck.deal
+    player.receive_card(card)
   end
 end
