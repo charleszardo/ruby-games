@@ -1,6 +1,8 @@
 require_relative 'hand'
 
 class Player
+  attr_reader :actions
+  
   def initialize
     @hand = Hand.new
     @coins = 0
@@ -33,8 +35,9 @@ class Player
     puts "which card(s) would you like to discard?  num separated by comma. no more than 3!"
     selection = gets.chomp.split(",").map(&:to_i)
     new_hand = []
-    @hand.each_with_index do |card, idx|
-      idx += 1
+    @hand.cards.each_with_index do |card, idx|
+      idx -= 1
+      p selection.include?(idx)
       new_hand << card unless selection.include?(idx)
     end
     new_hand
@@ -54,6 +57,7 @@ class Player
     action = actions[action]
     raise "not enough coin!"  if (action == :see || action == :raise) && @coins < bet
   rescue
+    puts "ERROR"
     retry
   end
   
@@ -63,5 +67,9 @@ class Player
   
   def pay(amount)
     
+  end
+  
+  def display_hand
+    @hand.display
   end
 end
