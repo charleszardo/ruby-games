@@ -20,6 +20,10 @@ class Hand
     @cards << card
   end
   
+  def remove_card(card)
+    @cards.delete(card)
+  end
+  
   def reveal
     revelation = []
     @cards.each do |card|
