@@ -34,22 +34,28 @@ class Game
     @players_in_round = @active_players
     @current_bet = @bet
     @pot = 0
-    2.times { betting_round }
+    2.times do
+      @players_in_round.each do |player|
+        action = betting_round(player)
+        discard_round(player, action)
+      end
+    end
     determine_round_winner
     payout(player)
   end
   
-  def betting_round
-    @players_in_round.each do |player|
-      player.display_hand
-      action = handle_action(player, player.perform_action(@current_bet))
-      unless action == :fold
-        discards = player.discard
-        (5 - discards.size).times do
-          deal_card(player)
-        end
+  def discard_round(player, prev_action)
+    unless prev_action == :fold
+      discards = player.discard
+      (5 - discards.size).times do
+        deal_card(player)
       end
     end
+  end
+  
+  def betting_round(player)
+    player.display_hand
+    return handle_action(player, player.perform_action(@current_bet))
   end
   
   def determine_round_winner
