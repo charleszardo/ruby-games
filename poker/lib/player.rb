@@ -1,4 +1,5 @@
 require_relative 'hand'
+require 'byebug'
 
 class Player
   attr_reader :actions
@@ -35,7 +36,8 @@ class Player
     puts "which card(s) would you like to discard?  num separated by comma. no more than 3!"
     selection = gets.chomp.split(",").map(&:to_i)
     @hand.cards.each_with_index do |card, idx|
-      idx -= 1
+      # debugger
+      idx += 1
       if selection.include?(idx)
         @hand.remove_card(card)
       end
