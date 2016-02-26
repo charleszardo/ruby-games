@@ -1,0 +1,1 @@
+puts "WELCOME TO RUBY ARCADE"
