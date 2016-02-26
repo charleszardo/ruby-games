@@ -430,9 +430,9 @@ module Battleship
   end
 end
 
-if $PROGRAM_NAME == __FILE__
+# if $PROGRAM_NAME == __FILE__
   c = Battleship::Computer.new
   h = Battleship::Human.new
   g = Battleship::Game.new(h, c)
   g.play
-end
+# end
