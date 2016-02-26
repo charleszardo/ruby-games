@@ -42,6 +42,9 @@ class Player
         @hand.remove_card(card)
       end
     end
+    p "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+    p @hand
+    p "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
     selection.size
   rescue
     puts "an error occurred due to response.  try again, chump."
@@ -58,6 +61,7 @@ class Player
     raise "invalid action" if !valid_action?(action)
     action = actions[action]
     raise "not enough coin!"  if (action == :see || action == :raise) && @coins < bet
+    action
   rescue
     puts "ERROR"
     retry
@@ -68,7 +72,8 @@ class Player
   end
   
   def pay(amount)
-    
+    #holder
+    1
   end
   
   def display_hand

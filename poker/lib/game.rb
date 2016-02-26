@@ -45,9 +45,12 @@ class Game
   end
   
   def discard_round(player, prev_action)
+    # p "XXXXXXXXXXXXX1111111222222233333333"
+    # p prev_action
     unless prev_action == :fold
       discards = player.discard
-      (5 - discards.size).times do
+      p discards
+      (5 - discards).times do
         deal_card(player)
       end
     end
@@ -55,7 +58,8 @@ class Game
   
   def betting_round(player)
     player.display_hand
-    return handle_action(player, player.perform_action(@current_bet))
+    action = player.perform_action(@current_bet)
+    return handle_action(player, action)
   end
   
   def determine_round_winner
@@ -76,6 +80,7 @@ class Game
       @current_bet = raise(player)
       @pot += @current_bet
     end
+    action
   end
   
   def raise(player)
