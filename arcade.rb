@@ -13,7 +13,7 @@ games = {
   },
   4 => {
     name: "Hangman",
-    path: "handman"
+    path: "hangman"
   },
   5 => {
     name: "Mastermind",
@@ -32,7 +32,6 @@ games.keys.each { |game| puts "#{game}. #{games[game][:name]}" }
 
 selection = gets.chomp.to_i
 selection = games[selection][:path]
-p selection
 
+system "clear" or system "cls"
 require_relative "#{selection}/#{selection}.rb"
-

@@ -199,7 +199,7 @@ module Hangman
   end
 end
 
-if $PROGRAM_NAME == __FILE__
+if $PROGRAM_NAME == "arcade.rb"
   h = Hangman::Human.new
   c = Hangman::Computer.new
   g = Hangman::Game.new(h,c)
