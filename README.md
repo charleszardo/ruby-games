@@ -18,3 +18,4 @@ TODO
 * Sudoku - Sudoku solver & add more functionality to user (allow users to "erase")
 * Minesweeper - Add cursor, Implement ~~saving~~/loading w/ YAML and cursor UPDATE: saving working, need to clean up and finish implementing loading
 * ARCADE - Create universal shell for all games.  Normalize shared classes (Player, Board, etc.).  Apply cursor, saving, etc. to all games.  Main menu for game selection.
+  - Battleship, Chess, and Ghost currently are not working from main menu
