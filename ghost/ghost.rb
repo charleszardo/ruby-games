@@ -132,8 +132,7 @@ class Game
   end
 end
 
-
-if $PROGRAM_NAME == __FILE__
+if $PROGRAM_NAME == "arcade.rb"
   p1 = Player.new("Player 1")
   p2 = Player.new("Player 2")
   p3 = Computer.new("KOMPUTER")
