@@ -1,5 +1,6 @@
 require 'colorize'
 require 'byebug'
+require_relative 'player'
 
 class Game
   SHIPS = { :a => {:name => "aircraft carrier", :size =>5, :color => :red},
@@ -11,11 +12,11 @@ class Game
 
   attr_reader :game_board, :player
 
-  def initialize(player1, player2)
+  def initialize(player1, player2, board1, board2)
     @player1 = player1
     @player2 = player2
-    @board1 = Battleship::Board.new
-    @board2 = Battleship::Board.new
+    @board1 = board1
+    @board2 = board2
     @player = player1
     @game_board = @board1
     setup_board(@board1)
@@ -204,6 +205,8 @@ class Board
   end
 end
 
+
+
 class Human < Player
   def make_move
     puts "make an attack (format: 0,1)"
@@ -385,8 +388,11 @@ class Computer < Player
     @moves.sample
   end
 end
-
-c = Battleship::Computer.new
-h = Battleship::Human.new
-g = Battleship::Game.new(h, c)
+b1 = Board.new
+b2 = Board.new
+b3 = Board.new
+b4 = Board.new
+c = Computer.new(b1)
+h = Human.new(b2)
+g = Game.new(h, c, b3, b4)
 g.play

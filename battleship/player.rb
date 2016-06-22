@@ -1,8 +1,8 @@
 class Player
   attr_accessor :board
 
-  def initialize
-    @board = Battleship::Board.new
+  def initialize(board)
+    @board = Board.new
     @board_size = @board.size
     @last_move = nil
     @direction = nil
