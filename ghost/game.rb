@@ -1,4 +1,6 @@
-class Game
+require_relative '../game'
+
+class GhostGame < Game
   attr_reader :current_player, :previous_player, :players, :dictionary
 
   GHOST = %w(g h o s t)
@@ -77,7 +79,7 @@ class Game
 
   def reset
     @fragment = ""
-    @dictionary = Game.create_dictionary
+    @dictionary = GhostGame.create_dictionary
   end
 
   def update_dict
