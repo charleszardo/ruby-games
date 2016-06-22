@@ -5,15 +5,6 @@ class GhostGame < Game
 
   GHOST = %w(g h o s t)
 
-  def self.create_dictionary
-    dictionary = Set.new
-    File.open("./dictionary.txt").each_line do |line|
-      l = line.chomp
-      dictionary << l if l.length >= 3
-    end
-    dictionary
-  end
-
   def initialize(*players)
     @players = players
     setup
@@ -79,7 +70,7 @@ class GhostGame < Game
 
   def reset
     @fragment = ""
-    @dictionary = GhostGame.create_dictionary
+    @dictionary = GhostGame.create_dictionary(3)
   end
 
   def update_dict
