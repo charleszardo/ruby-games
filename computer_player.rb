@@ -1,4 +1,4 @@
-class Computer < Player
+class ComputerPlayer < Player
   def play_turn
     letter_mapping = {}
     ("a".."z").each do |letter|

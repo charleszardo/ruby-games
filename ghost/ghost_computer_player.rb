@@ -1,6 +1,8 @@
-# require 'byebug'
-require_relative '../player'
 require_relative '../computer_player'
+
+class GhostComputerPlayer < ComputerPlayer
+  
+end
 
 class MoveFinder
   def initialize(dict, fragment)
