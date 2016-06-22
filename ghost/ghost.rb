@@ -101,7 +101,8 @@ class Game
 
   def get_letter
     loop do
-      next_letter = @current_player.play_turn
+      puts "Gimme a letter"
+      next_letter = @current_player.select_letter
       return next_letter.downcase if valid_play?(next_letter)
     end
   end

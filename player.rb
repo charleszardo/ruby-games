@@ -1,5 +1,3 @@
-p 'hello from player'
-
 class Player
   def initialize(name)
     @name = name
@@ -9,8 +7,7 @@ class Player
     @name
   end
 
-  def play_turn
-    puts "Gimme a letter"
+  def select_letter
     letter = gets.chomp.downcase
   end
 

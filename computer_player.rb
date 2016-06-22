@@ -1,5 +1,5 @@
 class ComputerPlayer < Player
-  def play_turn
+  def select_letter
     letter_mapping = {}
     ("a".."z").each do |letter|
       new_word = @fragment + letter
