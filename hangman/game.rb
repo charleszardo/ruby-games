@@ -19,7 +19,6 @@ class HangmanGame < Game
 
   def setup
     @dict = HangmanGame.create_dictionary
-    p @dict.length
     @player.receive_dict(@dict)
     @dealer.receive_dict(@dict)
     @secret_word = get_secret_word
