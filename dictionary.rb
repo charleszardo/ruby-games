@@ -25,4 +25,12 @@ class Dictionary
   def sample
     @dict.to_a.sample
   end
+  
+  def length
+    @dict.length
+  end
+  
+  def include?(word)
+    @dict.include?(word)
+  end
 end
