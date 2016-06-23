@@ -21,4 +21,8 @@ class Dictionary
     @max_letters = max_letters
     @dict = Dictionary.create_dictionary(min_letters, max_letters)
   end
+  
+  def sample
+    @dict.to_a.sample
+  end
 end
