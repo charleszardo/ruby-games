@@ -1,3 +1,5 @@
+require 'set'
+
 class Game
   def self.create_dictionary(min_letters=nil, max_letters=nil)
     dictionary = Set.new
