@@ -1,24 +1,7 @@
 require_relative 'game'
+require_relative 'player'
 
-class Player
-  attr_reader :dict
-
-  def initialize
-  end
-
-  def receive_dict(dict)
-    @dict = dict
-  end
-
-  def receive_secret_length(len)
-    @secret_len = len
-  end
-
-  def receive_guess_response(guess, locs)
-  end
-end
-
-class Human < Player
+class Human < HangmanPlayer
   def pick_secret_word
     gets.chomp
   end
