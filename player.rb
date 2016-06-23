@@ -11,8 +11,8 @@ class Player
     letter = gets.chomp.downcase
   end
 
-  def receive_dict(dictionary)
-    @dictionary = dictionary
+  def receive_dict(dict)
+    @dict = dict
   end
 
   def receive_fragment(fragment)
