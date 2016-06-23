@@ -70,7 +70,7 @@ class GhostGame < Game
 
   def reset
     @fragment = ""
-    @dictionary = GhostGame.create_dictionary(3)
+    @dictionary = Game.create_dictionary(3)
   end
 
   def update_dict
