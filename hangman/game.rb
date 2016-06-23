@@ -8,10 +8,6 @@ class HangmanGame < Game
   def self.secret_setup(word)
     word.split("").map { "_" }
   end
-  #
-  # def self.create_dictionary
-  #   File.open("./dictionary.txt").map(&:chomp)
-  # end
 
   attr_accessor :secret_word, :secret_length, :secret
 
