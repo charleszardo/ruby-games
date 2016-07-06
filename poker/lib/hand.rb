@@ -25,10 +25,10 @@ class Hand
   end
   
   def remove_card(card)
-    p @cards
-    p card
+    # p @cards
+    # p card
     @cards.delete(card)
-    p @cards
+    # p @cards
   end
   
   def reveal

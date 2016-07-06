@@ -34,16 +34,16 @@ class Player
   def handle_discard
     puts "which card(s) would you like to discard?  num separated by comma. no more than 3!"
     selection = gets.chomp.split(",").map(&:to_i)
-    @hand.cards.each_with_index do |card, idx|
-      # debugger
-      idx += 1
+    p selection
+    @hand.cards.each_with_index do |card, _idx|
+      idx = _idx + 1
+      p @hand.size
       if selection.include?(idx)
         @hand.remove_card(card)
       end
+      p @hand.size
     end
-    p "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-    p @hand
-    p "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+    
     selection.size
   rescue
     puts "an error occurred due to response.  try again, chump."

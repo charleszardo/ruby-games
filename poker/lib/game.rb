@@ -47,9 +47,9 @@ class Game
   
   def discard_round(player, prev_action)
     unless prev_action == :fold
-      discards = player.discard
-      p discards
-      (5 - discards).times do
+      num_discards = player.discard
+      
+      num_discards.times do
         deal_card(player)
       end
     end
