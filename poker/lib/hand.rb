@@ -15,6 +15,10 @@ class Hand
                    :high_card]
   end
   
+  def size
+    @cards.length
+  end
+  
   def add_card(card)
     raise "Too many cards" if @cards.size >= 5
     @cards << card
