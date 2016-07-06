@@ -24,6 +24,7 @@ class Game
   def setup
     distribute_coins
     deal_cards
+    p "setup done"
   end
   
   def distribute_coins
@@ -45,8 +46,6 @@ class Game
   end
   
   def discard_round(player, prev_action)
-    # p "XXXXXXXXXXXXX1111111222222233333333"
-    # p prev_action
     unless prev_action == :fold
       discards = player.discard
       p discards

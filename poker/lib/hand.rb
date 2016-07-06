@@ -16,9 +16,6 @@ class Hand
   end
   
   def add_card(card)
-    p "111111111111111111111111111111111111111111111111111111"
-    p @cards.size
-    p "111111111111111111111111111111111111111111111111111111"
     raise "Too many cards" if @cards.size >= 5
     @cards << card
   end

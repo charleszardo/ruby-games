@@ -1,5 +1,4 @@
 require_relative 'hand'
-require 'byebug'
 
 class Player
   attr_reader :actions
