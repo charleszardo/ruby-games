@@ -24,7 +24,6 @@ class Game
   def setup
     distribute_coins
     deal_cards
-    p "setup done"
   end
   
   def distribute_coins
@@ -49,9 +48,7 @@ class Game
     unless prev_action == :fold
       num_discards = player.discard
       
-      num_discards.times do
-        deal_card(player)
-      end
+      deal_cards([player], num_discards)
     end
   end
   
@@ -98,10 +95,5 @@ class Game
         player.receive_card(card)
       end
     end
-  end
-  
-  def deal_card(player)
-    card = @deck.deal
-    player.receive_card(card)
   end
 end
