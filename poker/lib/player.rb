@@ -23,7 +23,7 @@ class Player
     if answer == "Y"
       handle_discard
     elsif answer == "N"
-      []
+      0
     else
       raise "invalid response"
     end
