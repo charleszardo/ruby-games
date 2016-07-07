@@ -34,14 +34,18 @@ class Game
     @players_in_round = @active_players
     @current_bet = @bet
     @pot = 0
-    2.times do
-      @players_in_round.each do |player|
-        action = betting_round(player)
-        discard_round(player, action)
-      end
+    @players_in_round.each do |player|
+      next if @players_in_round.count <= 1
+      action = betting_round(player)
+      discard_round(player, action)
     end
-    determine_round_winner
-    payout(player)
+    @players_in_round.each do |player|
+      next if @players_in_round.count <= 1
+      action = betting_round(player)
+    end
+    
+    winner = determine_round_winner
+    payout(winner)
   end
   
   def discard_round(player, prev_action)
@@ -59,7 +63,11 @@ class Game
   end
   
   def determine_round_winner
-    
+    if @players_in_round.count == 1
+      return @players_in_round.first
+    else
+      
+    end
   end
   
   def payout(player)
