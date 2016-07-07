@@ -11,4 +11,11 @@ describe Game do
       game.setup
     end
   end
+  
+  # describe "#discard_round" do
+  #   subject(:game) { Game.new }
+  #   let(:player) { game.active_players[0] }
+  #
+  #   game.
+  # end
 end
